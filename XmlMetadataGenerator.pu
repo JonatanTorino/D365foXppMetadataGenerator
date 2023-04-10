@@ -1,0 +1,35 @@
+@startuml XppMetadataGenerator
+start
+:select folder;
+
+fork
+    :iterate folders;
+    fork
+        :iterate files;
+        :get declaration;
+        :get methods;
+        :write file;
+    fork again
+        :iterate files;
+        :get declaration;
+        :get methods;
+        :write file;
+    end fork
+
+fork again
+    :iterate folders;
+    fork
+        :iterate files;
+        :get declaration;
+        :get methods;
+       :write file;
+    fork again
+        :iterate files;
+        :get declaration;
+        :get methods;
+        :write file;
+    end fork
+end fork
+
+end
+@enduml
