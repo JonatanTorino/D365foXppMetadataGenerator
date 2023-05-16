@@ -1,4 +1,4 @@
-@startuml XppMetadataGenerator
+@startuml XppMetadataGenerator Activity
 start
 :select folder;
 
@@ -32,4 +32,9 @@ fork again
 end fork
 
 end
+@enduml
+
+@startuml XppMetadataGenerator Seq
+FolderReader -> FileReader
+
 @enduml

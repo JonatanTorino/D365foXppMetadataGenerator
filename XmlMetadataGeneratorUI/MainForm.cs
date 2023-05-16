@@ -39,13 +39,39 @@
             clbSourceFolder.Items.Clear();
 
             string sourceDir = txtSourceFolder.Text;
+
+            string[] dirToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata" };
+
             if (Directory.Exists(sourceDir))
             {
-                var dirs = Directory.GetDirectories(sourceDir);
+                var directories = Directory.GetDirectories(sourceDir);
+                var dirs = directories.Where(x => !dirToRemove.Any(y => x.Contains(y)));
                 foreach (var dir in dirs)
                 {
                     clbSourceFolder.Items.Add(dir);
                 }
+            }
+        }
+
+        private void btnGenerateXpp_Click(object sender, EventArgs e)
+        {
+            var foldersSelected = clbSourceFolder.CheckedItems;
+            foreach (var dir in foldersSelected.Cast<string>())
+            {
+                XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder.Text);
+                xppGenerator.SetXppModelDirectory(dir);
+
+                AxClassReader axClassReader = new AxClassReader();
+                xppGenerator.ProcessAxFiles(dir, axClassReader);
+
+                AxTableReader axTableReader = new AxTableReader();
+                xppGenerator.ProcessAxFiles(dir, axTableReader);
+
+                AxMapReader axMapReader = new AxMapReader();
+                xppGenerator.ProcessAxFiles(dir, axMapReader);
+
+                AxFormReader axFormReader = new AxFormReader();
+                xppGenerator.ProcessAxFiles(dir, axFormReader);
             }
         }
     }

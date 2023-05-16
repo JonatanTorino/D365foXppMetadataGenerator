@@ -1,0 +1,66 @@
+﻿using System.Text;
+using System.Xml;
+
+namespace XmlMetadataGeneratorUI
+{
+    public abstract class AxBaseReader
+    {
+        public string AxFolderName { get; init; }
+
+        protected AxBaseReader(string axFolderName)
+        {
+            AxFolderName = axFolderName;
+        }
+
+        public string GenerateXppFileContent(string axFile)
+        {
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.Load(axFile);
+            string sourceCodeDeclaration = ReadHeaderDeclaration(xmlDocument);
+            if (string.IsNullOrEmpty(sourceCodeDeclaration))
+            {
+                throw new XmlException($"No se encontró classDeclaration en el archivo {axFile}");
+            }
+            string body = ReadBody(xmlDocument);
+
+            string xppContent = MergeDeclarationAndBody(sourceCodeDeclaration, body);
+            Console.WriteLine(xppContent);
+
+            return xppContent;
+        }
+
+        protected abstract string ReadHeaderDeclaration(XmlDocument xmlDocument);
+
+        protected abstract string ReadBody(XmlDocument xmlDocument);
+
+        protected string GetMethodsSourceCode(XmlNodeList? xmlNodeMethodsList)
+        {
+            string body = string.Empty;
+            if (xmlNodeMethodsList != null)
+            {
+                StringBuilder stringBuilder = new StringBuilder();
+                foreach (XmlNode xmlNode in xmlNodeMethodsList)
+                {
+                    stringBuilder.AppendLine(xmlNode.InnerText.TrimEnd());
+                }
+                body = stringBuilder.ToString();
+            }
+
+            return body;
+        }
+
+        private static string MergeDeclarationAndBody(string classDeclaration, string classBody)
+        {
+            string[] declarationLines = classDeclaration.Trim().Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            string declarationBegin = string.Join(Environment.NewLine, declarationLines.Take(declarationLines.Length - 1));
+            declarationBegin = declarationBegin.TrimEnd();
+            string declarationEnd = declarationLines.Last();
+
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.AppendLine(declarationBegin);
+            stringBuilder.AppendLine(classBody.TrimEnd());
+            stringBuilder.AppendLine(declarationEnd);
+            return stringBuilder.ToString();
+        }
+    }
+}

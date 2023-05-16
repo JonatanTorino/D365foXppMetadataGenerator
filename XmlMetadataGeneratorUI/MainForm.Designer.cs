@@ -140,6 +140,7 @@
             btnGenerateXpp.TabIndex = 5;
             btnGenerateXpp.Text = "Generate";
             btnGenerateXpp.UseVisualStyleBackColor = true;
+            btnGenerateXpp.Click += btnGenerateXpp_Click;
             // 
             // MainForm
             // 
