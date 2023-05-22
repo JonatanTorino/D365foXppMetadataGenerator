@@ -19,7 +19,7 @@ namespace XmlMetadataGeneratorUI
             string sourceCodeDeclaration = ReadHeaderDeclaration(xmlDocument);
             if (string.IsNullOrEmpty(sourceCodeDeclaration))
             {
-                throw new XmlException($"No se encontró classDeclaration en el archivo {axFile}");
+                return string.Empty;
             }
             string body = ReadBody(xmlDocument);
 
@@ -56,9 +56,16 @@ namespace XmlMetadataGeneratorUI
             declarationBegin = declarationBegin.TrimEnd();
             string declarationEnd = declarationLines.Last();
 
+            string body = classBody;
+            int index = classBody.ToString().IndexOf(Environment.NewLine);
+            if (index >= 0)
+            {
+                body = classBody.Remove(0, index + Environment.NewLine.Length);
+            }
+
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(declarationBegin);
-            stringBuilder.AppendLine(classBody.TrimEnd());
+            stringBuilder.AppendLine(body);
             stringBuilder.AppendLine(declarationEnd);
             return stringBuilder.ToString();
         }

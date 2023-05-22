@@ -15,7 +15,12 @@ namespace XmlMetadataGeneratorUI
         protected override string ReadHeaderDeclaration(XmlDocument xmlDocument)
         {
             XmlNode? xmlNodeDeclaration = xmlDocument.SelectSingleNode("//SourceCode/Declaration");
-            string sourceCodeDeclaration = xmlNodeDeclaration.InnerText.Trim();
+
+            string sourceCodeDeclaration = null;
+            if (xmlNodeDeclaration != null)
+            {
+                sourceCodeDeclaration = xmlNodeDeclaration.InnerText.Trim();
+            }
             return sourceCodeDeclaration;
         }
 

@@ -40,7 +40,8 @@
 
             string sourceDir = txtSourceFolder.Text;
 
-            string[] dirToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata" };
+            //TODO Mover los valores de [dirToRemove] a un archivo de configuración (con opción de restaurar predeterminados)
+            string[] dirToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
 
             if (Directory.Exists(sourceDir))
             {

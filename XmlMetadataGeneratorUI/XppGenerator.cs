@@ -18,11 +18,18 @@
         public void ProcessAxFiles(string dir, AxBaseReader axReader)
         {
             string axFolder = Path.Combine(dir, axReader.AxFolderName);
+            if (!Directory.Exists(axFolder))
+            {
+                return;
+            }
             string[] axFiles = Directory.GetFiles(axFolder);
             foreach (var axFile in axFiles)
             {
                 var axContent = axReader.GenerateXppFileContent(axFile);
-                SaveXppFile(xppSourceModelFolder, axFile, axContent);
+                if (axContent != null)
+                {
+                    SaveXppFile(xppSourceModelFolder, axFile, axContent);
+                }
             }
         }
 
