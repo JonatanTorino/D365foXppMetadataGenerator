@@ -5,6 +5,7 @@
         public MainForm()
         {
             InitializeComponent();
+            btnGenerateXpp.Enabled = false;
         }
 
         private string SelectPath(string initialDirectory)
@@ -32,6 +33,7 @@
         private void btnDestinationFolder_Click(object sender, EventArgs e)
         {
             txtDestinationFolder.Text = SelectPath(string.Empty);
+            btnGenerateXpp.Enabled = true;
         }
 
         private void txtSourceFolder_TextChanged(object sender, EventArgs e)
@@ -57,23 +59,47 @@
         private void btnGenerateXpp_Click(object sender, EventArgs e)
         {
             var foldersSelected = clbSourceFolder.CheckedItems;
-            foreach (var dir in foldersSelected.Cast<string>())
+            if (foldersSelected.Count > 0)
             {
-                XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder.Text);
-                xppGenerator.SetXppModelDirectory(dir);
+                foreach (var dir in foldersSelected.Cast<string>())
+                {
+                    XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder.Text);
+                    xppGenerator.SetXppModelDirectory(dir);
 
-                AxClassReader axClassReader = new AxClassReader();
-                xppGenerator.ProcessAxFiles(dir, axClassReader);
+                    AxClassReader axClassReader = new AxClassReader();
+                    xppGenerator.ProcessAxFiles(dir, axClassReader);
 
-                AxTableReader axTableReader = new AxTableReader();
-                xppGenerator.ProcessAxFiles(dir, axTableReader);
+                    AxTableReader axTableReader = new AxTableReader();
+                    xppGenerator.ProcessAxFiles(dir, axTableReader);
 
-                AxMapReader axMapReader = new AxMapReader();
-                xppGenerator.ProcessAxFiles(dir, axMapReader);
+                    AxMapReader axMapReader = new AxMapReader();
+                    xppGenerator.ProcessAxFiles(dir, axMapReader);
 
-                AxFormReader axFormReader = new AxFormReader();
-                xppGenerator.ProcessAxFiles(dir, axFormReader);
+                    AxFormReader axFormReader = new AxFormReader();
+                    xppGenerator.ProcessAxFiles(dir, axFormReader);
+
+                    AxEntityReader axEntityReader = new AxEntityReader();
+                    xppGenerator.ProcessAxFiles(dir, axEntityReader);
+                }
+                MessageBox.Show("el archivo fue generado correctamente");
+            }
+            else
+            {
+                MessageBox.Show("tiene que seleccionar una opcion");
             }
         }
+
+        private bool todosMarcados = false;
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+            for (int i = 0; i < clbSourceFolder.Items.Count; i++)
+            {
+                clbSourceFolder.SetItemChecked(i, !todosMarcados);
+            }
+            todosMarcados = !todosMarcados;
+        }
+
     }
 }
