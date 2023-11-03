@@ -7,34 +7,6 @@
             InitializeComponent();
         }
 
-        private void enableGenerateButton()
-        {
-            if (txtSourceFolder.Text == "" || txtDestinationFolder.Text == "")
-            {
-                btnGenerateXpp.Enabled = false;
-            }
-            else
-            {
-                btnGenerateXpp.Enabled = true;
-            }
-        }
-
-        private string SelectPath(string initialDirectory)
-        {
-            string selectedPath = string.Empty;
-            using (var folderDialog = new FolderBrowserDialog())
-            {
-                folderDialog.InitialDirectory = initialDirectory;
-                folderDialog.ShowNewFolderButton = false;
-
-                if (folderDialog.ShowDialog() == DialogResult.OK)
-                {
-                    selectedPath = folderDialog.SelectedPath;
-                }
-            }
-            return selectedPath;
-        }
-
         private void btnSourceFolder_Click(object sender, EventArgs e)
         {
             string initialDir = $@"{Environment.GetEnvironmentVariable("SERVICEDRIVE")}\AosService\PackagaLocalDirectory\";
@@ -46,6 +18,27 @@
         {
             txtDestinationFolder.Text = SelectPath(string.Empty);
             enableGenerateButton();
+        }
+
+        private void txtSourceFolder_TextChanged(object sender, EventArgs e)
+        {
+            string sourceDir = txtSourceFolder.Text;
+
+            // Limpia los nodos existentes en el TreeView
+            tvFolders.Nodes.Clear();
+
+            // Verifica si el directorio de origen existe
+            if (Directory.Exists(sourceDir))
+            {
+                TreeNode rootNode = new TreeNode(Path.GetFileName(sourceDir));
+                tvFolders.Nodes.Add(rootNode);
+
+                // Define los nombres de carpetas a buscar
+                string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
+
+                // Llena el TreeView recursivamente
+                PopulateTreeViewRecursively(rootNode, sourceDir, folderNamesToSearch);
+            }
         }
 
         private void btnGenerateXpp_Click(object sender, EventArgs e)
@@ -85,6 +78,59 @@
             }
         }
 
+        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
+        {
+            bool selectAll = checkBox1.Checked;
+
+            // Recorre todos los nodos del TreeView y establece su estado de selección
+            SetNodeCheckedState(tvFolders.Nodes, selectAll);
+        }
+
+        private void tvFolders_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            TreeNode expandingNode = e.Node;
+
+            // Evita recargar nodos ya cargados
+            if (expandingNode.Nodes.Count == 1 && expandingNode.Nodes[0].Text == "...")
+            {
+                expandingNode.Nodes.Clear();
+
+                // Obtiene la ruta completa del nodo expandido
+                string fullPath = GetFullPath(expandingNode);
+
+                // Define los nombres de carpetas a buscar
+                string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
+
+                // Llena el TreeView con las carpetas correctas
+                PopulateTreeViewRecursively(expandingNode, fullPath, folderNamesToSearch);
+            }
+        }
+
+        private void tvFolders_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            // Este evento se dispara cuando se marca o desmarca un nodo
+            // Asegurémonos de que los nodos hijos se marquen o desmarquen en consecuencia
+            CheckChildNodes(e.Node, e.Node.Checked);
+        }
+
+        private string GetFullPath(TreeNode node)
+        {
+            // Obtiene la ruta completa del nodo, incluyendo los nodos padres
+            List<string> pathParts = new List<string>();
+
+            while (node != null)
+            {
+                pathParts.Insert(0, node.Text);
+                node = node.Parent;
+            }
+
+            // Combina la ruta con la ruta del directorio raíz (sourceDir)
+            string sourceDir = txtSourceFolder.Text;
+            pathParts.Insert(0, sourceDir);
+
+            return Path.Combine(pathParts.ToArray());
+        }
+
         private List<TreeNode> GetSelectedNodes(TreeNodeCollection nodes)
         {
             List<TreeNode> selectedNodes = new List<TreeNode>();
@@ -108,14 +154,6 @@
             return selectedNodes;
         }
 
-        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
-        {
-            bool selectAll = checkBox1.Checked;
-
-            // Recorre todos los nodos del TreeView y establece su estado de selección
-            SetNodeCheckedState(tvFolders.Nodes, selectAll);
-        }
-
         private void SetNodeCheckedState(TreeNodeCollection nodes, bool checkedState)
         {
             foreach (TreeNode node in nodes)
@@ -125,27 +163,6 @@
 
                 // Llama de forma recursiva para los nodos secundarios
                 SetNodeCheckedState(node.Nodes, checkedState);
-            }
-        }
-
-        private void txtSourceFolder_TextChanged(object sender, EventArgs e)
-        {
-            string sourceDir = txtSourceFolder.Text;
-
-            // Limpia los nodos existentes en el TreeView
-            tvFolders.Nodes.Clear();
-
-            // Verifica si el directorio de origen existe
-            if (Directory.Exists(sourceDir))
-            {
-                TreeNode rootNode = new TreeNode(Path.GetFileName(sourceDir));
-                tvFolders.Nodes.Add(rootNode);
-
-                // Define los nombres de carpetas a buscar
-                string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
-
-                // Llena el TreeView recursivamente
-                PopulateTreeViewRecursively(rootNode, sourceDir, folderNamesToSearch);
             }
         }
 
@@ -169,50 +186,6 @@
             }
         }
 
-        private void tvFolders_BeforeExpand(object sender, TreeViewCancelEventArgs e)
-        {
-            TreeNode expandingNode = e.Node;
-
-            // Evita recargar nodos ya cargados
-            if (expandingNode.Nodes.Count == 1 && expandingNode.Nodes[0].Text == "...")
-            {
-                expandingNode.Nodes.Clear();
-
-                // Obtiene la ruta completa del nodo expandido
-                string fullPath = GetFullPath(expandingNode);
-
-                // Define los nombres de carpetas a buscar
-                string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
-
-                // Llena el TreeView con las carpetas correctas
-                PopulateTreeViewRecursively(expandingNode, fullPath, folderNamesToSearch);
-            }
-        }
-
-        private string GetFullPath(TreeNode node)
-        {
-            // Obtiene la ruta completa del nodo, incluyendo los nodos padres
-            List<string> pathParts = new List<string>();
-
-            while (node != null)
-            {
-                pathParts.Insert(0, node.Text);
-                node = node.Parent;
-            }
-
-            // Combina la ruta con la ruta del directorio raíz (sourceDir)
-            string sourceDir = txtSourceFolder.Text;
-            pathParts.Insert(0, sourceDir);
-
-            return Path.Combine(pathParts.ToArray());
-        }
-
-        private void tvFolders_AfterCheck(object sender, TreeViewEventArgs e)
-        {
-            // Este evento se dispara cuando se marca o desmarca un nodo
-            // Asegurémonos de que los nodos hijos se marquen o desmarquen en consecuencia
-            CheckChildNodes(e.Node, e.Node.Checked);
-        }
         private void CheckChildNodes(TreeNode node, bool isChecked)
         {
             foreach (TreeNode child in node.Nodes)
@@ -221,6 +194,35 @@
                 CheckChildNodes(child, isChecked);
             }
         }
+
+        private void enableGenerateButton()
+        {
+            if (txtSourceFolder.Text == "" || txtDestinationFolder.Text == "")
+            {
+                btnGenerateXpp.Enabled = false;
+            }
+            else
+            {
+                btnGenerateXpp.Enabled = true;
+            }
+        }
+
+        private string SelectPath(string initialDirectory)
+        {
+            string selectedPath = string.Empty;
+            using (var folderDialog = new FolderBrowserDialog())
+            {
+                folderDialog.InitialDirectory = initialDirectory;
+                folderDialog.ShowNewFolderButton = false;
+
+                if (folderDialog.ShowDialog() == DialogResult.OK)
+                {
+                    selectedPath = folderDialog.SelectedPath;
+                }
+            }
+            return selectedPath;
+        }
+
     }
 
 }
