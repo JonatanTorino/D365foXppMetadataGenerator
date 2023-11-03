@@ -42,6 +42,8 @@
 
             string sourceDir = txtSourceFolder.Text;
 
+            int srcFolders = 0;
+
             //TODO Mover los valores de [dirToRemove] a un archivo de configuración (con opción de restaurar predeterminados)
             string[] dirToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
 
@@ -53,12 +55,21 @@
                 {
                     clbSourceFolder.Items.Add(dir);
                 }
+                progressBar1.Maximum = clbSourceFolder.Items.Count;
+                lbTotalFiles.Text = clbSourceFolder.Items.Count.ToString();
+                progressBar1.Value = 0;
+                foreach (var dir in clbSourceFolder.Items)
+                {
+                    progressBar1.Value = progressBar1.Value + 1;
+                    lbFileProgress.Text = progressBar1.Value.ToString();
+                }
             }
         }
 
         private void btnGenerateXpp_Click(object sender, EventArgs e)
         {
             var foldersSelected = clbSourceFolder.CheckedItems;
+            progressBar1.Value = 0;
             if (foldersSelected.Count > 0)
             {
                 foreach (var dir in foldersSelected.Cast<string>())
@@ -67,21 +78,26 @@
                     xppGenerator.SetXppModelDirectory(dir);
 
                     AxClassReader axClassReader = new AxClassReader();
-                    xppGenerator.ProcessAxFiles(dir, axClassReader);
+                    progressBar1.Value = progressBar1.Value + xppGenerator.ProcessAxFiles(dir, axClassReader);
+                    lbFileProgress.Text = progressBar1.Value.ToString();
 
                     AxTableReader axTableReader = new AxTableReader();
-                    xppGenerator.ProcessAxFiles(dir, axTableReader);
+                    progressBar1.Value = progressBar1.Value + xppGenerator.ProcessAxFiles(dir, axTableReader);
+                    lbFileProgress.Text = progressBar1.Value.ToString();
 
                     AxMapReader axMapReader = new AxMapReader();
-                    xppGenerator.ProcessAxFiles(dir, axMapReader);
+                    progressBar1.Value = progressBar1.Value + xppGenerator.ProcessAxFiles(dir, axMapReader);
+                    lbFileProgress.Text = progressBar1.Value.ToString();
 
                     AxFormReader axFormReader = new AxFormReader();
-                    xppGenerator.ProcessAxFiles(dir, axFormReader);
+                    progressBar1.Value = progressBar1.Value + xppGenerator.ProcessAxFiles(dir, axFormReader);
+                    lbFileProgress.Text = progressBar1.Value.ToString();
 
                     AxEntityReader axEntityReader = new AxEntityReader();
-                    xppGenerator.ProcessAxFiles(dir, axEntityReader);
+                    progressBar1.Value = progressBar1.Value + xppGenerator.ProcessAxFiles(dir, axEntityReader);
+                    lbFileProgress.Text = progressBar1.Value.ToString();
                 }
-                MessageBox.Show("el archivo fue generado correctamente");
+                MessageBox.Show("La cantidad de archivos generados son: " + lbTotalFiles.Text);
             }
             else
             {
@@ -93,13 +109,53 @@
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-
+            progressBar1.Value = 0;
+            progressBar1.Maximum = clbSourceFolder.Items.Count;
             for (int i = 0; i < clbSourceFolder.Items.Count; i++)
             {
                 clbSourceFolder.SetItemChecked(i, !todosMarcados);
+                progressBar1.Value = progressBar1.Value + 1;
+                lbFileProgress.Text = progressBar1.Value.ToString();
             }
+            lbTotalFiles.Text = clbSourceFolder.Items.Count.ToString();
             todosMarcados = !todosMarcados;
+
         }
 
+        private void progressBar1_Click(object sender, EventArgs e)
+        {
+
+        }
+        private void clbSourceFolder_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int amount = 0;
+            var foldersSelected = clbSourceFolder.CheckedItems;
+            lbTotalFiles.Text = "0";
+            foreach (var dir in foldersSelected.Cast<string>())
+            {
+                XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder.Text);
+                xppGenerator.SetXppModelDirectory(dir);
+
+                AxClassReader axClassReader = new AxClassReader();
+                amount = amount + xppGenerator.GetAxFiles(dir, axClassReader);
+
+                AxTableReader axTableReader = new AxTableReader();
+                amount = amount + xppGenerator.GetAxFiles(dir, axTableReader);
+
+                AxMapReader axMapReader = new AxMapReader();
+                amount = amount + xppGenerator.GetAxFiles(dir, axMapReader);
+
+                AxFormReader axFormReader = new AxFormReader();
+                amount = amount + xppGenerator.GetAxFiles(dir, axFormReader);
+
+                AxEntityReader axEntityReader = new AxEntityReader();
+                amount = amount + xppGenerator.GetAxFiles(dir, axEntityReader);
+            }
+            lbTotalFiles.Text = amount.ToString();
+            lbFileProgress.Text = "0";
+            progressBar1.Maximum = int.Parse(lbTotalFiles.Text);
+            progressBar1.Value = 0;
+
+        }
     }
 }

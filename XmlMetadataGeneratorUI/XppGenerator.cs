@@ -15,12 +15,12 @@
             this.xppSourceFolder = Path.Combine(destinationFolder, XPPSOURCE);
         }
 
-        public void ProcessAxFiles(string dir, AxBaseReader axReader)
+        public int ProcessAxFiles(string dir, AxBaseReader axReader)
         {
             string axFolder = Path.Combine(dir, axReader.AxFolderName);
             if (!Directory.Exists(axFolder))
             {
-                return;
+                return 0;
             }
             string[] axFiles = Directory.GetFiles(axFolder);
             foreach (var axFile in axFiles)
@@ -31,7 +31,19 @@
                     SaveXppFile(xppSourceModelFolder, axFile, axContent);
                 }
             }
+            return axFiles.Length;
         }
+        public int GetAxFiles(string dir, AxBaseReader axReader)
+        {
+            string axFolder = Path.Combine(dir, axReader.AxFolderName);
+            if (!Directory.Exists(axFolder))
+            {
+                return 0;
+            }
+            string[] axFiles = Directory.GetFiles(axFolder);
+            return axFiles.Length;
+        }
+
 
         public string SetXppModelDirectory(string dir)
         {
