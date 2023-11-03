@@ -2,10 +2,38 @@
 {
     public partial class MainForm : Form
     {
+        private bool todosMarcados = false;
+        private AutoCompletePath autoComplete;
+        private LastValuesManager lastValuesManager;
+        private LastValues lastValues;
         public MainForm()
         {
             InitializeComponent();
             btnGenerateXpp.Enabled = false;
+            autoComplete = new AutoCompletePath(txtSourceFolder, listBoxSuggestions);
+
+            lastValuesManager = new LastValuesManager();
+            lastValues = lastValuesManager.LoadLastValues();
+
+            txtSourceFolder.Text = lastValues.SourceFolder;
+            txtDestinationFolder.Text = lastValues.DestinationFolder;
+
+            txtSourceFolder.TextChanged += TxtSourceFolder_TextChanged;
+            txtDestinationFolder.TextChanged += TxtDestinationFolder_TextChanged;
+
+            listBoxSuggestions.MouseDoubleClick += ListBoxSuggestions_MouseDoubleClick;
+        }
+
+        private void TxtSourceFolder_TextChanged(object sender, EventArgs e)
+        {
+            lastValues.SourceFolder = txtSourceFolder.Text;
+            lastValuesManager.SaveLastValues(lastValues);
+        }
+
+        private void TxtDestinationFolder_TextChanged(object sender, EventArgs e)
+        {
+            lastValues.DestinationFolder = txtDestinationFolder.Text;
+            lastValuesManager.SaveLastValues(lastValues);
         }
 
         private string SelectPath(string initialDirectory)
@@ -59,6 +87,7 @@
         private void btnGenerateXpp_Click(object sender, EventArgs e)
         {
             var foldersSelected = clbSourceFolder.CheckedItems;
+            int axFilesAmount = 0;
             if (foldersSelected.Count > 0)
             {
                 foreach (var dir in foldersSelected.Cast<string>())
@@ -67,29 +96,27 @@
                     xppGenerator.SetXppModelDirectory(dir);
 
                     AxClassReader axClassReader = new AxClassReader();
-                    xppGenerator.ProcessAxFiles(dir, axClassReader);
+                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axClassReader);
 
                     AxTableReader axTableReader = new AxTableReader();
-                    xppGenerator.ProcessAxFiles(dir, axTableReader);
+                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axTableReader);
 
                     AxMapReader axMapReader = new AxMapReader();
-                    xppGenerator.ProcessAxFiles(dir, axMapReader);
+                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axMapReader);
 
                     AxFormReader axFormReader = new AxFormReader();
-                    xppGenerator.ProcessAxFiles(dir, axFormReader);
+                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axFormReader);
 
                     AxEntityReader axEntityReader = new AxEntityReader();
-                    xppGenerator.ProcessAxFiles(dir, axEntityReader);
+                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axEntityReader);
                 }
-                MessageBox.Show("el archivo fue generado correctamente");
+                MessageBox.Show("La cantidad de archivos generados es: " + axFilesAmount);
             }
             else
             {
                 MessageBox.Show("tiene que seleccionar una opcion");
             }
         }
-
-        private bool todosMarcados = false;
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
@@ -99,6 +126,38 @@
                 clbSourceFolder.SetItemChecked(i, !todosMarcados);
             }
             todosMarcados = !todosMarcados;
+        }
+
+        private void ListBoxSuggestions_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listBoxSuggestions.SelectedItem != null)
+            {
+                string selectedFolder = listBoxSuggestions.SelectedItem.ToString();
+                string currentText = txtSourceFolder.Text;
+                string newText;
+
+                if (currentText.EndsWith("\\"))
+                {
+                    // Si ya hay una barra diagonal invertida al final, newte va a ser lo mismo que selectedFolder.
+                    newText = selectedFolder + "\\";
+                }
+                else
+                {
+                    // Agrega una barra diagonal invertida al final.
+                    newText = currentText + "\\" + selectedFolder + "\\";
+                }
+
+                txtSourceFolder.Text = newText;
+
+                // Actualiza las sugerencias en el ListBoxSuggestions
+                autoComplete.ShowSuggestions(newText);
+
+                // Oculta el ListBoxSuggestions si no hay más sugerencias
+                if (listBoxSuggestions.Items.Count == 0)
+                {
+                    listBoxSuggestions.Visible = false;
+                }
+            }
         }
 
     }
