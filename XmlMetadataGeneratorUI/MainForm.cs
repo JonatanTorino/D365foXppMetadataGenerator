@@ -101,6 +101,10 @@
                 // Define los nombres de carpetas a buscar
                 string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
 
+                /// Define los nombres de carpetas a excluir
+                string[] folderNamesToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
+                /// Corregir descarga de XML
+
                 // Llena el TreeView con las carpetas correctas
                 PopulateTreeViewRecursively(expandingNode, fullPath, folderNamesToSearch);
             }
