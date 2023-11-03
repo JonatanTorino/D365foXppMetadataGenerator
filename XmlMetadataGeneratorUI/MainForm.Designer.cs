@@ -34,10 +34,10 @@
             grpBoxDestinationFolder = new GroupBox();
             txtDestinationFolder = new TextBox();
             btnGenerateXpp = new Button();
-            clbSourceFolder = new CheckedListBox();
             btnDestinationFolder = new Button();
             btnSourceFolder = new Button();
             checkBox1 = new CheckBox();
+            tvFolders = new TreeView();
             tlpMainForm.SuspendLayout();
             grpBoxSourceFolder.SuspendLayout();
             grpBoxDestinationFolder.SuspendLayout();
@@ -53,10 +53,10 @@
             tlpMainForm.Controls.Add(grpBoxSourceFolder, 0, 0);
             tlpMainForm.Controls.Add(grpBoxDestinationFolder, 0, 1);
             tlpMainForm.Controls.Add(btnGenerateXpp, 2, 2);
-            tlpMainForm.Controls.Add(clbSourceFolder, 0, 2);
             tlpMainForm.Controls.Add(btnDestinationFolder, 2, 1);
             tlpMainForm.Controls.Add(btnSourceFolder, 2, 0);
             tlpMainForm.Controls.Add(checkBox1, 0, 3);
+            tlpMainForm.Controls.Add(tvFolders, 0, 2);
             tlpMainForm.Location = new Point(0, 0);
             tlpMainForm.Name = "tlpMainForm";
             tlpMainForm.RowCount = 4;
@@ -116,15 +116,6 @@
             btnGenerateXpp.UseVisualStyleBackColor = true;
             btnGenerateXpp.Click += btnGenerateXpp_Click;
             // 
-            // clbSourceFolder
-            // 
-            clbSourceFolder.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            clbSourceFolder.FormattingEnabled = true;
-            clbSourceFolder.Location = new Point(3, 131);
-            clbSourceFolder.Name = "clbSourceFolder";
-            clbSourceFolder.Size = new Size(459, 130);
-            clbSourceFolder.TabIndex = 2;
-            // 
             // btnDestinationFolder
             // 
             btnDestinationFolder.Anchor = AnchorStyles.Left;
@@ -156,7 +147,18 @@
             checkBox1.TabIndex = 1;
             checkBox1.Text = "Seleccionar todos";
             checkBox1.UseVisualStyleBackColor = true;
-            checkBox1.CheckedChanged += checkBox1_CheckedChanged;
+            checkBox1.CheckedChanged += checkBox1_CheckedChanged_1;
+            // 
+            // tvFolders
+            // 
+            tvFolders.CheckBoxes = true;
+            tvFolders.Dock = DockStyle.Fill;
+            tvFolders.Location = new Point(3, 131);
+            tvFolders.Name = "tvFolders";
+            tvFolders.Size = new Size(459, 130);
+            tvFolders.TabIndex = 6;
+            tvFolders.AfterCheck += tvFolders_AfterCheck;
+            tvFolders.BeforeExpand += tvFolders_BeforeExpand;
             // 
             // MainForm
             // 
@@ -165,10 +167,9 @@
             AutoSize = true;
             ClientSize = new Size(557, 302);
             Controls.Add(tlpMainForm);
-            MaximizeBox = false;
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "MainForm";
+            Text = "XPP Generator";
             tlpMainForm.ResumeLayout(false);
             tlpMainForm.PerformLayout();
             grpBoxSourceFolder.ResumeLayout(false);
@@ -188,8 +189,8 @@
         private Button btnDestinationFolder;
         private TextBox txtSourceFolder;
         private TextBox txtDestinationFolder;
-        private CheckedListBox clbSourceFolder;
         private Button btnGenerateXpp;
         private CheckBox checkBox1;
+        private TreeView tvFolders;
     }
 }
