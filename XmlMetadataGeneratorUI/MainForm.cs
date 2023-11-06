@@ -36,8 +36,11 @@
                 // Define los nombres de carpetas a buscar
                 string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
 
+                // Define los nombres de carpetas a omitir
+                string[] folderNamesToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
+
                 // Llena el TreeView recursivamente
-                PopulateTreeViewRecursively(rootNode, sourceDir, folderNamesToSearch);
+                PopulateTreeViewRecursively(rootNode, sourceDir, folderNamesToSearch, folderNamesToRemove);
             }
         }
 
@@ -101,12 +104,11 @@
                 // Define los nombres de carpetas a buscar
                 string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
 
-                /// Define los nombres de carpetas a excluir
+                // Define los nombres de carpetas a omitir
                 string[] folderNamesToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
-                /// Corregir descarga de XML
 
                 // Llena el TreeView con las carpetas correctas
-                PopulateTreeViewRecursively(expandingNode, fullPath, folderNamesToSearch);
+                PopulateTreeViewRecursively(expandingNode, fullPath, folderNamesToSearch, folderNamesToRemove);
             }
         }
 
@@ -170,22 +172,29 @@
             }
         }
 
-        private void PopulateTreeViewRecursively(TreeNode parentNode, string parentPath, string[] folderNamesToSearch)
+        private void PopulateTreeViewRecursively(TreeNode parentNode, string parentPath, string[] folderNamesToSearch, string[] folderNamesToRemove)
         {
             // Itera a través de los subdirectorios en la ruta dada
             foreach (string subDir in Directory.GetDirectories(parentPath))
             {
                 string subDirName = Path.GetFileName(subDir);
 
-                // Comprueba si el subdirectorio contiene al menos una de las carpetas buscadas
+                // Verifica si el subdirectorio contiene al menos una de las carpetas buscadas
                 if (folderNamesToSearch.Any(name => Directory.GetDirectories(subDir, name, SearchOption.AllDirectories).Any()))
                 {
+                    // Verifica si el subdirectorio está en la lista de carpetas para omitir
+                    if (folderNamesToRemove.Contains(subDirName))
+                    {
+                        // Omitir este subdirectorio y no agregarlo al TreeView
+                        continue;
+                    }
+
                     // Agrega el subdirectorio como un nodo hijo del nodo padre
                     TreeNode node = new TreeNode(subDirName);
                     parentNode.Nodes.Add(node);
 
                     // Llama a PopulateTreeViewRecursively para seguir buscando en este subdirectorio
-                    PopulateTreeViewRecursively(node, subDir, folderNamesToSearch);
+                    PopulateTreeViewRecursively(node, subDir, folderNamesToSearch, folderNamesToRemove);
                 }
             }
         }
