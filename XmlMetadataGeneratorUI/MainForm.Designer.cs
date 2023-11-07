@@ -108,6 +108,7 @@
             // 
             // btnGenerateXpp
             // 
+            btnGenerateXpp.Enabled = false;
             btnGenerateXpp.Location = new Point(468, 131);
             btnGenerateXpp.Name = "btnGenerateXpp";
             btnGenerateXpp.Size = new Size(75, 23);
