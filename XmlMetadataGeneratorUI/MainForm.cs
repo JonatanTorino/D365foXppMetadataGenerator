@@ -82,6 +82,7 @@
                 lbTotalFolder.Text = "5";
                 foreach (var dir in foldersSelected.Cast<string>())
                 {
+                    progressBarFolders.Value = 0;
                     XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder.Text);
                     xppGenerator.SetXppModelDirectory(dir);
 
