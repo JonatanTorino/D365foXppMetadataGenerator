@@ -31,6 +31,7 @@
 
             // Combina la ruta con la ruta del directorio raíz (sourceDir)
             string sourceDir = txt.Text;
+            sourceDir = Directory.GetParent(sourceDir).FullName;
             pathParts.Insert(0, sourceDir);
 
             return Path.Combine(pathParts.ToArray());
