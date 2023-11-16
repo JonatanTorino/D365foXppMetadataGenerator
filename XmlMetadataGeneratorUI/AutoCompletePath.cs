@@ -5,46 +5,54 @@ using System.Windows.Forms;
 
 public class AutoCompletePath
 {
-    private TextBox textBox;
-    private ListBox listBoxSuggestions;
+    private ComboBox comboBox;
+    private string currentText = string.Empty;
 
-    public AutoCompletePath(TextBox textBox, ListBox listBoxSuggestions)
+    public AutoCompletePath(ComboBox comboBox)
     {
-        this.textBox = textBox;
-        this.listBoxSuggestions = listBoxSuggestions;
+        this.comboBox = comboBox;
+        comboBox.DropDown += ComboBox_DropDown;
+        comboBox.TextChanged += ComboBox_TextChanged;
+        comboBox.Leave += ComboBox_Leave;
+    }
 
-        this.listBoxSuggestions.Visible = false; // Inicialmente, el ListBox de sugerencias está oculto
-        this.textBox.TextChanged += TextBox_TextChanged;
+    private void ComboBox_DropDown(object sender, EventArgs e)
+    {
+        // Cuando se despliegan las opciones, asegúrate de mostrar las sugerencias nuevamente.
+        ShowSuggestions(currentText);
+    }
+
+    private void ComboBox_TextChanged(object sender, EventArgs e)
+    {
+        // Captura el texto actual en el ComboBox mientras el usuario escribe.
+        currentText = comboBox.Text;
+    }
+
+    private void ComboBox_Leave(object sender, EventArgs e)
+    {
+        // Cuando el ComboBox pierde el foco, muestra las sugerencias nuevamente.
+        ShowSuggestions(currentText);
     }
 
     public void ShowSuggestions(string text)
     {
         string sourceDir = text;
 
-        // Filtrar las sugerencias de carpetas aquí y agregarlas al ListBox
+        // Filtrar las sugerencias de carpetas aquí
         string[] dirToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
 
-        listBoxSuggestions.Items.Clear();
+        comboBox.Items.Clear();
 
         if (Directory.Exists(sourceDir))
         {
             var directories = Directory.GetDirectories(sourceDir);
             var dirs = directories.Where(x => !dirToRemove.Any(y => x.Contains(y)));
-            listBoxSuggestions.Items.AddRange(dirs.ToArray());
-
-            if (listBoxSuggestions.Items.Count > 0)
-            {
-                listBoxSuggestions.Visible = true; // Mostrar el ListBox si hay sugerencias
-            }
+            comboBox.Items.AddRange(dirs.ToArray());
         }
-        else
-        {
-            listBoxSuggestions.Visible = false; // Ocultar el ListBox si no hay sugerencias
-        }
-    }
 
-    private void TextBox_TextChanged(object sender, EventArgs e)
-    {
-        ShowSuggestions(textBox.Text);
+        // Restaura el texto original después de actualizar las sugerencias.
+        comboBox.Text = currentText;
+        // Coloca el cursor al final del texto para que el usuario pueda seguir escribiendo.
+        comboBox.Select(comboBox.Text.Length, 0);
     }
 }

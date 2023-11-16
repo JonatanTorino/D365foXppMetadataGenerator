@@ -9,39 +9,43 @@ using Newtonsoft.Json;
 
 namespace XmlMetadataGeneratorUI
 {
-        public class LastValuesManager
+    public class LastValuesManager
+    {
+        private const string lastValuesFileName = "LastValues.json";
+
+        public LastValues LoadLastValues()
         {
-            private const string lastValuesFileName = "LastValues.json";
-
-            public LastValues LoadLastValues()
+            try
             {
-                try
+                if (File.Exists(lastValuesFileName))
                 {
-                    if (File.Exists(lastValuesFileName))
-                    {
-                        var json = File.ReadAllText(lastValuesFileName);
-                        return JsonConvert.DeserializeObject<LastValues>(json);
-                    }
+                    var json = File.ReadAllText(lastValuesFileName);
+                    return JsonConvert.DeserializeObject<LastValues>(json);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Console.WriteLine("Error al cargar los últimos valores: " + ex.Message);
+                    File.WriteAllText(lastValuesFileName, string.Empty);
                 }
-
-                return new LastValues();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error al cargar los últimos valores: " + ex.Message);
             }
 
-            public void SaveLastValues(LastValues lastValues)
-            {
-                var json = JsonConvert.SerializeObject(lastValues, Newtonsoft.Json.Formatting.Indented);
-                File.WriteAllText(lastValuesFileName, json);
-            }
+            return new LastValues();
         }
 
-        public class LastValues
+        public void SaveLastValues(LastValues lastValues)
         {
-            public string SourceFolder { get; set; }
-            public string DestinationFolder { get; set; }
+            var json = JsonConvert.SerializeObject(lastValues, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText(lastValuesFileName, json);
         }
     }
+
+    public class LastValues
+    {
+        public string SourceFolder { get; set; }
+        public string DestinationFolder { get; set; }
+    }
+}
 

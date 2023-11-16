@@ -10,29 +10,28 @@
         {
             InitializeComponent();
             btnGenerateXpp.Enabled = false;
-            autoComplete = new AutoCompletePath(txtSourceFolder, listBoxSuggestions);
+            autoComplete = new AutoCompletePath(cmbSourceFolder);
+            autoComplete = new AutoCompletePath(cmbDestinationFolder);
 
             lastValuesManager = new LastValuesManager();
             lastValues = lastValuesManager.LoadLastValues();
 
-            txtSourceFolder.Text = lastValues.SourceFolder;
-            txtDestinationFolder.Text = lastValues.DestinationFolder;
+            cmbSourceFolder.Text = lastValues.SourceFolder;
+            cmbDestinationFolder.Text = lastValues.DestinationFolder;
 
-            txtSourceFolder.TextChanged += TxtSourceFolder_TextChanged;
-            txtDestinationFolder.TextChanged += TxtDestinationFolder_TextChanged;
-
-            listBoxSuggestions.MouseDoubleClick += ListBoxSuggestions_MouseDoubleClick;
+            cmbSourceFolder.TextChanged += cmbSourceFolder_TextChanged;
+            cmbDestinationFolder.TextChanged += CmbDestinationFolder_TextChanged;
         }
 
-        private void TxtSourceFolder_TextChanged(object sender, EventArgs e)
+        private void CmbSourceFolder_TextChanged(object sender, EventArgs e)
         {
-            lastValues.SourceFolder = txtSourceFolder.Text;
+            lastValues.SourceFolder = cmbSourceFolder.Text;
             lastValuesManager.SaveLastValues(lastValues);
         }
 
-        private void TxtDestinationFolder_TextChanged(object sender, EventArgs e)
+        private void CmbDestinationFolder_TextChanged(object sender, EventArgs e)
         {
-            lastValues.DestinationFolder = txtDestinationFolder.Text;
+            lastValues.DestinationFolder = cmbDestinationFolder.Text;
             lastValuesManager.SaveLastValues(lastValues);
         }
 
@@ -55,20 +54,20 @@
         private void btnSourceFolder_Click(object sender, EventArgs e)
         {
             string initialDir = $@"{Environment.GetEnvironmentVariable("SERVICEDRIVE")}\AosService\PackagaLocalDirectory\";
-            txtSourceFolder.Text = SelectPath(initialDir);
+            cmbSourceFolder.Text = SelectPath(initialDir);
         }
 
         private void btnDestinationFolder_Click(object sender, EventArgs e)
         {
-            txtDestinationFolder.Text = SelectPath(string.Empty);
+            cmbDestinationFolder.Text = SelectPath(string.Empty);
             btnGenerateXpp.Enabled = true;
         }
 
-        private void txtSourceFolder_TextChanged(object sender, EventArgs e)
+        private void cmbSourceFolder_TextChanged(object sender, EventArgs e)
         {
             clbSourceFolder.Items.Clear();
 
-            string sourceDir = txtSourceFolder.Text;
+            string sourceDir = cmbSourceFolder.Text;
 
             //TODO Mover los valores de [dirToRemove] a un archivo de configuración (con opción de restaurar predeterminados)
             string[] dirToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
@@ -92,7 +91,7 @@
             {
                 foreach (var dir in foldersSelected.Cast<string>())
                 {
-                    XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder.Text);
+                    XppGenerator xppGenerator = new XppGenerator(cmbDestinationFolder.Text);
                     xppGenerator.SetXppModelDirectory(dir);
 
                     AxClassReader axClassReader = new AxClassReader();
@@ -127,38 +126,5 @@
             }
             todosMarcados = !todosMarcados;
         }
-
-        private void ListBoxSuggestions_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            if (listBoxSuggestions.SelectedItem != null)
-            {
-                string selectedFolder = listBoxSuggestions.SelectedItem.ToString();
-                string currentText = txtSourceFolder.Text;
-                string newText;
-
-                if (currentText.EndsWith("\\"))
-                {
-                    // Si ya hay una barra diagonal invertida al final, newte va a ser lo mismo que selectedFolder.
-                    newText = selectedFolder + "\\";
-                }
-                else
-                {
-                    // Agrega una barra diagonal invertida al final.
-                    newText = currentText + "\\" + selectedFolder + "\\";
-                }
-
-                txtSourceFolder.Text = newText;
-
-                // Actualiza las sugerencias en el ListBoxSuggestions
-                autoComplete.ShowSuggestions(newText);
-
-                // Oculta el ListBoxSuggestions si no hay más sugerencias
-                if (listBoxSuggestions.Items.Count == 0)
-                {
-                    listBoxSuggestions.Visible = false;
-                }
-            }
-        }
-
     }
 }
