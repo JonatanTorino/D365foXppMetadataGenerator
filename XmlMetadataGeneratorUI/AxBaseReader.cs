@@ -10,10 +10,13 @@ namespace XmlMetadataGeneratorUI
         protected AxBaseReader(string axFolderName)
         {
             AxFolderName = axFolderName;
+
         }
 
         public string GenerateXppFileContent(string axFile)
         {
+
+
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.Load(axFile);
             string sourceCodeDeclaration = ReadHeaderDeclaration(xmlDocument);
