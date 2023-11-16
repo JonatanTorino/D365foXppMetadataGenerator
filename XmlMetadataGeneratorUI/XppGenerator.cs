@@ -5,6 +5,8 @@
         private const string XPPSOURCE = "XppSource";
         private readonly string xppSourceFolder;
         private string xppSourceModelFolder;
+        public delegate void ArchivoGenerado();
+        public ArchivoGenerado archivoGenerado;
 
         public XppGenerator(string destinationFolder)
         {
@@ -29,6 +31,7 @@
                 if (axContent != null)
                 {
                     SaveXppFile(xppSourceModelFolder, axFile, axContent);
+                    archivoGenerado();
                 }
             }
             return axFiles.Length;

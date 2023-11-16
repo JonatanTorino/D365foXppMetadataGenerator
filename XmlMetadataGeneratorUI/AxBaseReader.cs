@@ -69,5 +69,16 @@ namespace XmlMetadataGeneratorUI
             stringBuilder.AppendLine(declarationEnd);
             return stringBuilder.ToString();
         }
+
+        internal int GetFilesNumber(string dir)
+        {
+            string axFolder = Path.Combine(dir, this.AxFolderName);
+            if (!Directory.Exists(axFolder))
+            {
+                return 0;
+            }
+            string[] axFiles = Directory.GetFiles(axFolder);
+            return axFiles.Length;
+        }
     }
 }
