@@ -6,6 +6,8 @@
         private AutoCompletePath autoComplete;
         private LastValuesManager lastValuesManager;
         private LastValues lastValues;
+        delegate void ModeloTerminado();
+        ModeloTerminado modeloTerminado;
         public MainForm()
         {
             InitializeComponent();
@@ -21,6 +23,15 @@
 
             cmbSourceFolder.TextChanged += cmbSourceFolder_TextChanged;
             cmbDestinationFolder.TextChanged += CmbDestinationFolder_TextChanged;
+            modeloTerminado += avanzarProgressBarModelo;
+            progressBarFiles.Visible = false;
+            progressBarFolders.Visible = false;
+            progressBarModelos.Visible = false;
+        }
+        private void avanzarProgressBarModelo()
+        {
+            progressBarModelos.Value += 1;
+            lbModelProgress.Text = progressBarModelos.Value.ToString();
         }
 
         private void CmbSourceFolder_TextChanged(object sender, EventArgs e)
@@ -89,35 +100,61 @@
 
         private void btnGenerateXpp_Click(object sender, EventArgs e)
         {
+            progressBarFiles.Visible = true;
+            progressBarFolders.Visible = true;
+            progressBarModelos.Visible = true;
+            progressBarModelos.Value = 0;
+            progressBarFiles.Value = 0;
+            progressBarFolders.Value = 0;
+
             // Obtén los nodos seleccionados en el TreeView
             var selectedNodes = MainFormMethods.GetSelectedNodes(tvFolders.Nodes);
 
-            int axFilesAmount = 0;
             if (selectedNodes.Count > 0)
             {
+                progressBarModelos.Maximum = selectedNodes.Count;
+                lbTotalModel.Text = progressBarModelos.Maximum.ToString();
+                lbTotalFolder.Text = "5";
                 foreach (TreeNode selectedNode in selectedNodes)
                 {
                     string dir = MainFormMethods.GetFullPath(selectedNode, cmbSourceFolder.Text);
 
                     XppGenerator xppGenerator = new XppGenerator(cmbDestinationFolder.Text);
+                    progressBarFolders.Value = 0;
                     xppGenerator.SetXppModelDirectory(dir);
 
+                    xppGenerator.archivoGenerado += avanzarProgressBarArchivo;
+
                     AxClassReader axClassReader = new AxClassReader();
-                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axClassReader);
+                    progressBarFiles.Maximum = axClassReader.GetFilesNumber(dir);
+                    xppGenerator.ProcessAxFiles(dir, axClassReader);
+                    AvanzarProgressBarCarpetas();
 
                     AxTableReader axTableReader = new AxTableReader();
-                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axTableReader);
+                    progressBarFiles.Maximum = progressBarFiles.Maximum + axTableReader.GetFilesNumber(dir);
+                    xppGenerator.ProcessAxFiles(dir, axTableReader);
+                    AvanzarProgressBarCarpetas();
 
                     AxMapReader axMapReader = new AxMapReader();
-                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axMapReader);
+                    progressBarFiles.Maximum = progressBarFiles.Maximum + axMapReader.GetFilesNumber(dir);
+                    xppGenerator.ProcessAxFiles(dir, axMapReader);
+                    AvanzarProgressBarCarpetas();
 
                     AxFormReader axFormReader = new AxFormReader();
-                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axFormReader);
+                    progressBarFiles.Maximum = progressBarFiles.Maximum + axFormReader.GetFilesNumber(dir);
+                    xppGenerator.ProcessAxFiles(dir, axFormReader);
+                    AvanzarProgressBarCarpetas();
 
                     AxEntityReader axEntityReader = new AxEntityReader();
-                    axFilesAmount = axFilesAmount + xppGenerator.ProcessAxFiles(dir, axEntityReader);
+                    progressBarFiles.Maximum = progressBarFiles.Maximum + axEntityReader.GetFilesNumber(dir);
+                    xppGenerator.ProcessAxFiles(dir, axEntityReader);
+                    AvanzarProgressBarCarpetas();
+
+                    lbTotalFile.Text = progressBarFiles.Maximum.ToString();
+
+                    modeloTerminado();
                 }
-                MessageBox.Show("La cantidad de archivos generados es: " + axFilesAmount);
+                MessageBox.Show("La cantidad de archivos generados son: " + progressBarFiles.Value);
             }
             else
             {
@@ -145,6 +182,18 @@
                 // Llena el TreeView con las carpetas correctas
                 MainFormMethods.PopulateTreeViewRecursively(expandingNode, fullPath, folderNamesToSearch, folderNamesToRemove);
             }
+        }
+
+        private void AvanzarProgressBarCarpetas()
+        {
+            progressBarFolders.Value += 1;
+            lbFolderProgress.Text = progressBarFolders.Value.ToString();
+        }
+
+        private void avanzarProgressBarArchivo()
+        {
+            progressBarFiles.Value += 1;
+            lbFileProgress.Text = progressBarFiles.Value.ToString();
         }
 
         private void tvFolders_AfterCheck(object sender, TreeViewEventArgs e)

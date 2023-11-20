@@ -5,6 +5,8 @@
         private const string XPPSOURCE = "XppSource";
         private readonly string xppSourceFolder;
         private string xppSourceModelFolder;
+        public delegate void ArchivoGenerado();
+        public ArchivoGenerado archivoGenerado;
 
         public XppGenerator(string destinationFolder)
         {
@@ -30,10 +32,22 @@
                 if (axContent != null)
                 {
                     SaveXppFile(xppSourceModelFolder, axFile, axContent);
+                    archivoGenerado();
                 }
             }
             return axFiles.Length;
         }
+        public int GetAxFiles(string dir, AxBaseReader axReader)
+        {
+            string axFolder = Path.Combine(dir, axReader.AxFolderName);
+            if (!Directory.Exists(axFolder))
+            {
+                return 0;
+            }
+            string[] axFiles = Directory.GetFiles(axFolder);
+            return axFiles.Length;
+        }
+
 
         public string SetXppModelDirectory(string dir)
         {
