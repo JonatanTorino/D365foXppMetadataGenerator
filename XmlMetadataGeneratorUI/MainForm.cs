@@ -65,32 +65,40 @@
 
         private void cmbSourceFolder_TextChanged(object sender, EventArgs e)
         {
-            clbSourceFolder.Items.Clear();
-
             string sourceDir = cmbSourceFolder.Text;
 
-            //TODO Mover los valores de [dirToRemove] a un archivo de configuración (con opción de restaurar predeterminados)
-            string[] dirToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
+            // Limpia los nodos existentes en el TreeView
+            tvFolders.Nodes.Clear();
 
+            // Verifica si el directorio de origen existe
             if (Directory.Exists(sourceDir))
             {
-                var directories = Directory.GetDirectories(sourceDir);
-                var dirs = directories.Where(x => !dirToRemove.Any(y => x.Contains(y)));
-                foreach (var dir in dirs)
-                {
-                    clbSourceFolder.Items.Add(dir);
-                }
+                TreeNode rootNode = new TreeNode(Path.GetFileName(sourceDir));
+                tvFolders.Nodes.Add(rootNode);
+
+                // Define los nombres de carpetas a buscar
+                string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
+
+                // Define los nombres de carpetas a omitir
+                string[] folderNamesToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
+
+                // Llena el TreeView recursivamente
+                MainFormMethods.PopulateTreeViewRecursively(rootNode, sourceDir, folderNamesToSearch, folderNamesToRemove);
             }
         }
 
         private void btnGenerateXpp_Click(object sender, EventArgs e)
         {
-            var foldersSelected = clbSourceFolder.CheckedItems;
+            // Obtén los nodos seleccionados en el TreeView
+            var selectedNodes = MainFormMethods.GetSelectedNodes(tvFolders.Nodes);
+
             int axFilesAmount = 0;
-            if (foldersSelected.Count > 0)
+            if (selectedNodes.Count > 0)
             {
-                foreach (var dir in foldersSelected.Cast<string>())
+                foreach (TreeNode selectedNode in selectedNodes)
                 {
+                    string dir = MainFormMethods.GetFullPath(selectedNode, cmbSourceFolder.Text);
+
                     XppGenerator xppGenerator = new XppGenerator(cmbDestinationFolder.Text);
                     xppGenerator.SetXppModelDirectory(dir);
 
@@ -113,18 +121,46 @@
             }
             else
             {
-                MessageBox.Show("tiene que seleccionar una opcion");
+                MessageBox.Show("Debe seleccionar al menos una carpeta en el TreeView.");
             }
+        }
+        private void tvFolders_BeforeExpand(object sender, TreeViewCancelEventArgs e)
+        {
+            TreeNode expandingNode = e.Node;
+
+            // Evita recargar nodos ya cargados
+            if (expandingNode.Nodes.Count == 1 && expandingNode.Nodes[0].Text == "...")
+            {
+                expandingNode.Nodes.Clear();
+
+                // Obtiene la ruta completa del nodo expandido
+                string fullPath = MainFormMethods.GetFullPath(expandingNode, cmbSourceFolder.Text);
+
+                // Define los nombres de carpetas a buscar
+                string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
+
+                // Define los nombres de carpetas a omitir
+                string[] folderNamesToRemove = { "bin", "Descriptor", "Reports", "Resources", "XppMetadata", "XppSource" };
+
+                // Llena el TreeView con las carpetas correctas
+                MainFormMethods.PopulateTreeViewRecursively(expandingNode, fullPath, folderNamesToSearch, folderNamesToRemove);
+            }
+        }
+
+        private void tvFolders_AfterCheck(object sender, TreeViewEventArgs e)
+        {
+            // Este evento se dispara cuando se marca o desmarca un nodo
+            // Asegurémonos de que los nodos hijos se marquen o desmarquen en consecuencia
+            MainFormMethods.CheckChildNodes(e.Node, e.Node.Checked);
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
+            bool selectAll = checkBox1.Checked;
 
-            for (int i = 0; i < clbSourceFolder.Items.Count; i++)
-            {
-                clbSourceFolder.SetItemChecked(i, !todosMarcados);
-            }
-            todosMarcados = !todosMarcados;
+            // Recorre todos los nodos del TreeView y establece su estado de selección
+            MainFormMethods.SetNodeCheckedState(tvFolders.Nodes, selectAll);
         }
+
     }
 }
