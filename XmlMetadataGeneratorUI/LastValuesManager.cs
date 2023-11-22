@@ -20,7 +20,8 @@ namespace XmlMetadataGeneratorUI
                 if (File.Exists(lastValuesFileName))
                 {
                     var json = File.ReadAllText(lastValuesFileName);
-                    return JsonConvert.DeserializeObject<LastValues>(json);
+                    var LastValue = JsonConvert.DeserializeObject<LastValues>(json);
+                    return LastValue;
                 }
                 else
                 {

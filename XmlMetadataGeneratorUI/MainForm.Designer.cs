@@ -30,15 +30,13 @@
         {
             tlpMainForm = new TableLayoutPanel();
             grpBoxSourceFolder = new GroupBox();
-            cmbDestinationFolder = new ComboBox();
+            txtSourceFolder1 = new TextBox();
             grpBoxDestinationFolder = new GroupBox();
-            cmbSourceFolder = new ComboBox();
             btnGenerateXpp = new Button();
             btnDestinationFolder = new Button();
             btnSourceFolder = new Button();
-            btnSourceFolder = new Button();
-            tvFolders = new TreeView();
             checkBox1 = new CheckBox();
+            tvFolders = new TreeView();
             groupBox1 = new GroupBox();
             lbTotalModel = new Label();
             lbModelBar = new Label();
@@ -54,6 +52,7 @@
             lbFileProgress = new Label();
             progressBarModelos = new ProgressBar();
             progressBarFolders = new ProgressBar();
+            txtDestinationFolder1 = new TextBox();
             tlpMainForm.SuspendLayout();
             grpBoxSourceFolder.SuspendLayout();
             grpBoxDestinationFolder.SuspendLayout();
@@ -76,7 +75,6 @@
             tlpMainForm.Controls.Add(btnSourceFolder, 2, 0);
             tlpMainForm.Controls.Add(checkBox1, 0, 3);
             tlpMainForm.Controls.Add(tvFolders, 0, 2);
-            tlpMainForm.Location = new Point(0, 0);
             tlpMainForm.Controls.Add(groupBox1, 2, 4);
             tlpMainForm.Controls.Add(progressBarFiles, 0, 6);
             tlpMainForm.Controls.Add(groupBox2, 2, 5);
@@ -93,67 +91,13 @@
             tlpMainForm.RowStyles.Add(new RowStyle(SizeType.Absolute, 37F));
             tlpMainForm.RowStyles.Add(new RowStyle(SizeType.Absolute, 28F));
             tlpMainForm.RowStyles.Add(new RowStyle(SizeType.Absolute, 29F));
-            tlpMainForm.Size = new Size(549, 349);
+            tlpMainForm.Size = new Size(621, 379);
             tlpMainForm.TabIndex = 0;
-            // 
-            // btnGenerateXpp
-            // 
-            btnGenerateXpp.Enabled = false;
-            btnGenerateXpp.Location = new Point(468, 131);
-            btnGenerateXpp.Anchor = AnchorStyles.None;
-            btnGenerateXpp.Location = new Point(552, 198);
-            btnGenerateXpp.Location = new Point(468, 131);
-            btnGenerateXpp.Name = "btnGenerateXpp";
-            btnGenerateXpp.Size = new Size(65, 70);
-            btnGenerateXpp.TabIndex = 5;
-            btnGenerateXpp.Text = "Generate";
-            btnGenerateXpp.UseVisualStyleBackColor = true;
-            btnGenerateXpp.Click += btnGenerateXpp_Click;
-            // 
-            // btnSourceFolder
-            // 
-            btnSourceFolder.Anchor = AnchorStyles.None;
-            btnSourceFolder.Location = new Point(552, 15);
-            btnSourceFolder.Name = "btnSourceFolder";
-            btnSourceFolder.Size = new Size(65, 30);
-            btnSourceFolder.TabIndex = 3;
-            btnSourceFolder.Text = "Folder";
-            btnSourceFolder.UseVisualStyleBackColor = true;
-            btnSourceFolder.Click += btnSourceFolder_Click;
-            // // btnDestinationFolder
-            // 
-            btnDestinationFolder.Anchor = AnchorStyles.None;
-            btnDestinationFolder.Location = new Point(552, 75);
-            btnDestinationFolder.Name = "btnDestinationFolder";
-            btnDestinationFolder.Size = new Size(65, 30);
-            btnDestinationFolder.TabIndex = 4;
-            btnDestinationFolder.Text = "Folder";
-            btnDestinationFolder.UseVisualStyleBackColor = true;
-            btnDestinationFolder.Click += btnDestinationFolder_Click;
-            // 
-            // grpBoxDestinationFolder
-            // 
-            grpBoxDestinationFolder.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            grpBoxDestinationFolder.Controls.Add(cmbDestinationFolder);
-            grpBoxDestinationFolder.Location = new Point(3, 63);
-            grpBoxDestinationFolder.Name = "grpBoxDestinationFolder";
-            grpBoxDestinationFolder.Size = new Size(531, 54);
-            grpBoxDestinationFolder.TabIndex = 1;
-            grpBoxDestinationFolder.TabStop = false;
-            grpBoxDestinationFolder.Text = "Destination Folder";
-            // 
-            // cmbDestinationFolder
-            // 
-            cmbDestinationFolder.FormattingEnabled = true;
-            cmbDestinationFolder.Location = new Point(3, 22);
-            cmbDestinationFolder.Name = "cmbDestinationFolder";
-            cmbDestinationFolder.Size = new Size(523, 23);
-            cmbDestinationFolder.TabIndex = 1;
             // 
             // grpBoxSourceFolder
             // 
             grpBoxSourceFolder.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            grpBoxSourceFolder.Controls.Add(cmbSourceFolder);
+            grpBoxSourceFolder.Controls.Add(txtSourceFolder1);
             grpBoxSourceFolder.Location = new Point(3, 3);
             grpBoxSourceFolder.Name = "grpBoxSourceFolder";
             grpBoxSourceFolder.Size = new Size(531, 54);
@@ -161,18 +105,62 @@
             grpBoxSourceFolder.TabStop = false;
             grpBoxSourceFolder.Text = "Source Folder";
             // 
-            // cmbSourceFolder
+            // txtSourceFolder1
             // 
-            cmbSourceFolder.FormattingEnabled = true;
-            cmbSourceFolder.Location = new Point(3, 19);
-            cmbSourceFolder.Name = "cmbSourceFolder";
-            cmbSourceFolder.Size = new Size(523, 23);
-            cmbSourceFolder.TabIndex = 1;
+            txtSourceFolder1.Location = new Point(0, 19);
+            txtSourceFolder1.Name = "txtSourceFolder1";
+            txtSourceFolder1.Size = new Size(526, 23);
+            txtSourceFolder1.TabIndex = 1;
+            // 
+            // grpBoxDestinationFolder
+            // 
+            grpBoxDestinationFolder.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            grpBoxDestinationFolder.Controls.Add(txtDestinationFolder1);
+            grpBoxDestinationFolder.Location = new Point(3, 63);
+            grpBoxDestinationFolder.Name = "grpBoxDestinationFolder";
+            grpBoxDestinationFolder.Size = new Size(531, 54);
+            grpBoxDestinationFolder.TabIndex = 1;
+            grpBoxDestinationFolder.TabStop = false;
+            grpBoxDestinationFolder.Text = "Destination Folder";
+            // 
+            // btnGenerateXpp
+            // 
+            btnGenerateXpp.Anchor = AnchorStyles.None;
+            btnGenerateXpp.Enabled = false;
+            btnGenerateXpp.Location = new Point(546, 153);
+            btnGenerateXpp.Name = "btnGenerateXpp";
+            btnGenerateXpp.Size = new Size(65, 70);
+            btnGenerateXpp.TabIndex = 5;
+            btnGenerateXpp.Text = "Generate";
+            btnGenerateXpp.UseVisualStyleBackColor = true;
+            btnGenerateXpp.Click += btnGenerateXpp_Click;
+            // 
+            // btnDestinationFolder
+            // 
+            btnDestinationFolder.Anchor = AnchorStyles.None;
+            btnDestinationFolder.Location = new Point(546, 75);
+            btnDestinationFolder.Name = "btnDestinationFolder";
+            btnDestinationFolder.Size = new Size(65, 30);
+            btnDestinationFolder.TabIndex = 4;
+            btnDestinationFolder.Text = "Folder";
+            btnDestinationFolder.UseVisualStyleBackColor = true;
+            btnDestinationFolder.Click += btnDestinationFolder_Click;
+            // 
+            // btnSourceFolder
+            // 
+            btnSourceFolder.Anchor = AnchorStyles.None;
+            btnSourceFolder.Location = new Point(546, 15);
+            btnSourceFolder.Name = "btnSourceFolder";
+            btnSourceFolder.Size = new Size(65, 30);
+            btnSourceFolder.TabIndex = 3;
+            btnSourceFolder.Text = "Folder";
+            btnSourceFolder.UseVisualStyleBackColor = true;
+            btnSourceFolder.Click += btnSourceFolder_Click;
             // 
             // checkBox1
-            //
+            // 
             checkBox1.AutoSize = true;
-            checkBox1.Location = new Point(3, 229);
+            checkBox1.Location = new Point(3, 259);
             checkBox1.Name = "checkBox1";
             checkBox1.Size = new Size(119, 19);
             checkBox1.TabIndex = 1;
@@ -184,9 +172,9 @@
             // 
             tvFolders.CheckBoxes = true;
             tvFolders.Dock = DockStyle.Fill;
-            tvFolders.Location = new Point(3, 131);
+            tvFolders.Location = new Point(3, 123);
             tvFolders.Name = "tvFolders";
-            tvFolders.Size = new Size(459, 130);
+            tvFolders.Size = new Size(531, 130);
             tvFolders.TabIndex = 6;
             tvFolders.AfterCheck += tvFolders_AfterCheck;
             tvFolders.BeforeExpand += tvFolders_BeforeExpand;
@@ -197,7 +185,7 @@
             groupBox1.Controls.Add(lbModelBar);
             groupBox1.Controls.Add(lbModelProgress);
             groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(468, 258);
+            groupBox1.Location = new Point(540, 288);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(78, 31);
             groupBox1.TabIndex = 6;
@@ -232,7 +220,7 @@
             // 
             // progressBarFiles
             // 
-            progressBarFiles.Location = new Point(3, 323);
+            progressBarFiles.Location = new Point(3, 353);
             progressBarFiles.Name = "progressBarFiles";
             progressBarFiles.Size = new Size(180, 20);
             progressBarFiles.TabIndex = 8;
@@ -242,7 +230,7 @@
             groupBox2.Controls.Add(lbTotalFolder);
             groupBox2.Controls.Add(lbFolderBar);
             groupBox2.Controls.Add(lbFolderProgress);
-            groupBox2.Location = new Point(468, 295);
+            groupBox2.Location = new Point(540, 325);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(78, 22);
             groupBox2.TabIndex = 9;
@@ -280,7 +268,7 @@
             groupBox3.Controls.Add(lbTotalFile);
             groupBox3.Controls.Add(lbFileBar);
             groupBox3.Controls.Add(lbFileProgress);
-            groupBox3.Location = new Point(468, 323);
+            groupBox3.Location = new Point(540, 353);
             groupBox3.Name = "groupBox3";
             groupBox3.Size = new Size(78, 23);
             groupBox3.TabIndex = 10;
@@ -315,28 +303,34 @@
             // 
             // progressBarModelos
             // 
-            progressBarModelos.Location = new Point(3, 258);
+            progressBarModelos.Location = new Point(3, 288);
             progressBarModelos.Name = "progressBarModelos";
             progressBarModelos.Size = new Size(180, 23);
             progressBarModelos.TabIndex = 1;
             // 
             // progressBarFolders
             // 
-            progressBarFolders.Location = new Point(3, 295);
+            progressBarFolders.Location = new Point(3, 325);
             progressBarFolders.Maximum = 5;
             progressBarFolders.Name = "progressBarFolders";
             progressBarFolders.Size = new Size(180, 19);
             progressBarFolders.TabIndex = 7;
+            // 
+            // txtDestinationFolder1
+            // 
+            txtDestinationFolder1.Location = new Point(0, 25);
+            txtDestinationFolder1.Name = "txtDestinationFolder1";
+            txtDestinationFolder1.Size = new Size(526, 23);
+            txtDestinationFolder1.TabIndex = 1;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
-            ClientSize = new Size(638, 399);
+            ClientSize = new Size(1086, 399);
             Controls.Add(tlpMainForm);
             Name = "MainForm";
-            Text = "XPP Generator";
             Text = "MainForm";
             tlpMainForm.ResumeLayout(false);
             tlpMainForm.PerformLayout();
@@ -351,6 +345,7 @@
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         private TableLayoutPanel tlpMainForm;
@@ -358,8 +353,6 @@
         private GroupBox grpBoxDestinationFolder;
         private Button btnSourceFolder;
         private Button btnDestinationFolder;
-        private ComboBox cmbSourceFolder;
-        private ComboBox cmbDestinationFolder;
         private TreeView tvFolders;
         private Button btnGenerateXpp;
         private CheckBox checkBox1;
@@ -379,5 +372,8 @@
         private Label lbFileBar;
         public Label lbFileProgress;
         #endregion
+
+        private TextBox txtSourceFolder1;
+        private TextBox txtDestinationFolder1;
     }
 }

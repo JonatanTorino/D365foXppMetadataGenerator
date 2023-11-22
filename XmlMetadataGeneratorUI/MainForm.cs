@@ -3,7 +3,8 @@
     public partial class MainForm : Form
     {
         private bool todosMarcados = false;
-        private AutoCompletePath autoComplete;
+        private AutoCompletePath autoCompleteSourceFolder1;
+        private AutoCompletePath autoCompleteDestinationFolder1;
         private LastValuesManager lastValuesManager;
         private LastValues lastValues;
         delegate void ModeloTerminado();
@@ -12,17 +13,18 @@
         {
             InitializeComponent();
             btnGenerateXpp.Enabled = false;
-            autoComplete = new AutoCompletePath(cmbSourceFolder);
-            autoComplete = new AutoCompletePath(cmbDestinationFolder);
+            autoCompleteSourceFolder1 = new AutoCompletePath(txtSourceFolder1);
+            autoCompleteDestinationFolder1 = new AutoCompletePath(txtDestinationFolder1);
 
             lastValuesManager = new LastValuesManager();
             lastValues = lastValuesManager.LoadLastValues();
 
-            cmbSourceFolder.Text = lastValues.SourceFolder;
-            cmbDestinationFolder.Text = lastValues.DestinationFolder;
+            txtSourceFolder1.Text = lastValues.SourceFolder;
+            txtDestinationFolder1.Text = lastValues.DestinationFolder;
 
-            cmbSourceFolder.TextChanged += cmbSourceFolder_TextChanged;
-            cmbDestinationFolder.TextChanged += CmbDestinationFolder_TextChanged;
+            txtSourceFolder1.TextChanged += txtSourceFolder_TextChanged;
+            txtDestinationFolder1.TextChanged += TxtDestinationFolder_TextChanged;
+
             modeloTerminado += avanzarProgressBarModelo;
             progressBarFiles.Visible = false;
             progressBarFolders.Visible = false;
@@ -34,15 +36,15 @@
             lbModelProgress.Text = progressBarModelos.Value.ToString();
         }
 
-        private void CmbSourceFolder_TextChanged(object sender, EventArgs e)
+        private void TxtSourceFolder_TextChanged(object sender, EventArgs e)
         {
-            lastValues.SourceFolder = cmbSourceFolder.Text;
+            lastValues.SourceFolder = txtSourceFolder1.Text;
             lastValuesManager.SaveLastValues(lastValues);
         }
 
-        private void CmbDestinationFolder_TextChanged(object sender, EventArgs e)
+        private void TxtDestinationFolder_TextChanged(object sender, EventArgs e)
         {
-            lastValues.DestinationFolder = cmbDestinationFolder.Text;
+            lastValues.DestinationFolder = txtDestinationFolder1.Text;
             lastValuesManager.SaveLastValues(lastValues);
         }
 
@@ -65,18 +67,18 @@
         private void btnSourceFolder_Click(object sender, EventArgs e)
         {
             string initialDir = $@"{Environment.GetEnvironmentVariable("SERVICEDRIVE")}\AosService\PackagaLocalDirectory\";
-            cmbSourceFolder.Text = SelectPath(initialDir);
+            txtSourceFolder1.Text = SelectPath(initialDir);
         }
 
         private void btnDestinationFolder_Click(object sender, EventArgs e)
         {
-            cmbDestinationFolder.Text = SelectPath(string.Empty);
+            txtDestinationFolder1.Text = SelectPath(string.Empty);
             btnGenerateXpp.Enabled = true;
         }
 
-        private void cmbSourceFolder_TextChanged(object sender, EventArgs e)
+        private void txtSourceFolder_TextChanged(object sender, EventArgs e)
         {
-            string sourceDir = cmbSourceFolder.Text;
+            string sourceDir = txtSourceFolder1.Text;
 
             // Limpia los nodos existentes en el TreeView
             tvFolders.Nodes.Clear();
@@ -117,9 +119,9 @@
                 lbTotalFolder.Text = "5";
                 foreach (TreeNode selectedNode in selectedNodes)
                 {
-                    string dir = MainFormMethods.GetFullPath(selectedNode, cmbSourceFolder.Text);
+                    string dir = MainFormMethods.GetFullPath(selectedNode, txtSourceFolder1.Text);
 
-                    XppGenerator xppGenerator = new XppGenerator(cmbDestinationFolder.Text);
+                    XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder1.Text);
                     progressBarFolders.Value = 0;
                     xppGenerator.SetXppModelDirectory(dir);
 
@@ -171,7 +173,7 @@
                 expandingNode.Nodes.Clear();
 
                 // Obtiene la ruta completa del nodo expandido
-                string fullPath = MainFormMethods.GetFullPath(expandingNode, cmbSourceFolder.Text);
+                string fullPath = MainFormMethods.GetFullPath(expandingNode, txtSourceFolder1.Text);
 
                 // Define los nombres de carpetas a buscar
                 string[] folderNamesToSearch = { "AxClass", "AxTable", "AxForm", "AxDataEntityView" };
@@ -210,6 +212,7 @@
             // Recorre todos los nodos del TreeView y establece su estado de selección
             MainFormMethods.SetNodeCheckedState(tvFolders.Nodes, selectAll);
         }
+
 
     }
 }
