@@ -21,7 +21,7 @@ namespace XmlMetadataGeneratorUI
                 {
                     var json = File.ReadAllText(lastValuesFileName);
                     var LastValue = JsonConvert.DeserializeObject<LastValues>(json);
-                    return LastValue;
+                    return LastValue ?? new LastValues();
                 }
                 else
                 {

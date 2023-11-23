@@ -19,6 +19,7 @@
             lastValuesManager = new LastValuesManager();
             lastValues = lastValuesManager.LoadLastValues();
 
+
             txtSourceFolder1.Text = lastValues.SourceFolder;
             txtDestinationFolder1.Text = lastValues.DestinationFolder;
 
@@ -29,6 +30,9 @@
             progressBarFiles.Visible = false;
             progressBarFolders.Visible = false;
             progressBarModelos.Visible = false;
+            gbxModel.Visible = false;
+            gbxFolder.Visible = false;
+            gbxFile.Visible = false;
         }
         private void avanzarProgressBarModelo()
         {
@@ -108,6 +112,9 @@
             progressBarModelos.Value = 0;
             progressBarFiles.Value = 0;
             progressBarFolders.Value = 0;
+            gbxModel.Visible = true;
+            gbxFolder.Visible = true;
+            gbxFile.Visible = true;
 
             // Obtén los nodos seleccionados en el TreeView
             var selectedNodes = MainFormMethods.GetSelectedNodes(tvFolders.Nodes);

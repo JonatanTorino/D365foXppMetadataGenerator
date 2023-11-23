@@ -32,33 +32,33 @@
             grpBoxSourceFolder = new GroupBox();
             txtSourceFolder1 = new TextBox();
             grpBoxDestinationFolder = new GroupBox();
+            txtDestinationFolder1 = new TextBox();
             btnGenerateXpp = new Button();
             btnDestinationFolder = new Button();
             btnSourceFolder = new Button();
             checkBox1 = new CheckBox();
             tvFolders = new TreeView();
-            groupBox1 = new GroupBox();
+            gbxModel = new GroupBox();
             lbTotalModel = new Label();
             lbModelBar = new Label();
             lbModelProgress = new Label();
             progressBarFiles = new ProgressBar();
-            groupBox2 = new GroupBox();
+            gbxFolder = new GroupBox();
             lbTotalFolder = new Label();
             lbFolderBar = new Label();
             lbFolderProgress = new Label();
-            groupBox3 = new GroupBox();
+            gbxFile = new GroupBox();
             lbTotalFile = new Label();
             lbFileBar = new Label();
             lbFileProgress = new Label();
             progressBarModelos = new ProgressBar();
             progressBarFolders = new ProgressBar();
-            txtDestinationFolder1 = new TextBox();
             tlpMainForm.SuspendLayout();
             grpBoxSourceFolder.SuspendLayout();
             grpBoxDestinationFolder.SuspendLayout();
-            groupBox1.SuspendLayout();
-            groupBox2.SuspendLayout();
-            groupBox3.SuspendLayout();
+            gbxModel.SuspendLayout();
+            gbxFolder.SuspendLayout();
+            gbxFile.SuspendLayout();
             SuspendLayout();
             // 
             // tlpMainForm
@@ -75,10 +75,10 @@
             tlpMainForm.Controls.Add(btnSourceFolder, 2, 0);
             tlpMainForm.Controls.Add(checkBox1, 0, 3);
             tlpMainForm.Controls.Add(tvFolders, 0, 2);
-            tlpMainForm.Controls.Add(groupBox1, 2, 4);
+            tlpMainForm.Controls.Add(gbxModel, 2, 4);
             tlpMainForm.Controls.Add(progressBarFiles, 0, 6);
-            tlpMainForm.Controls.Add(groupBox2, 2, 5);
-            tlpMainForm.Controls.Add(groupBox3, 2, 6);
+            tlpMainForm.Controls.Add(gbxFolder, 2, 5);
+            tlpMainForm.Controls.Add(gbxFile, 2, 6);
             tlpMainForm.Controls.Add(progressBarModelos, 0, 4);
             tlpMainForm.Controls.Add(progressBarFolders, 0, 5);
             tlpMainForm.Location = new Point(9, 0);
@@ -122,6 +122,13 @@
             grpBoxDestinationFolder.TabIndex = 1;
             grpBoxDestinationFolder.TabStop = false;
             grpBoxDestinationFolder.Text = "Destination Folder";
+            // 
+            // txtDestinationFolder1
+            // 
+            txtDestinationFolder1.Location = new Point(0, 25);
+            txtDestinationFolder1.Name = "txtDestinationFolder1";
+            txtDestinationFolder1.Size = new Size(526, 23);
+            txtDestinationFolder1.TabIndex = 1;
             // 
             // btnGenerateXpp
             // 
@@ -179,17 +186,17 @@
             tvFolders.AfterCheck += tvFolders_AfterCheck;
             tvFolders.BeforeExpand += tvFolders_BeforeExpand;
             // 
-            // groupBox1
+            // gbxModel
             // 
-            groupBox1.Controls.Add(lbTotalModel);
-            groupBox1.Controls.Add(lbModelBar);
-            groupBox1.Controls.Add(lbModelProgress);
-            groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(540, 288);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(78, 31);
-            groupBox1.TabIndex = 6;
-            groupBox1.TabStop = false;
+            gbxModel.Controls.Add(lbTotalModel);
+            gbxModel.Controls.Add(lbModelBar);
+            gbxModel.Controls.Add(lbModelProgress);
+            gbxModel.Dock = DockStyle.Fill;
+            gbxModel.Location = new Point(540, 288);
+            gbxModel.Name = "gbxModel";
+            gbxModel.Size = new Size(78, 31);
+            gbxModel.TabIndex = 6;
+            gbxModel.TabStop = false;
             // 
             // lbTotalModel
             // 
@@ -225,16 +232,16 @@
             progressBarFiles.Size = new Size(180, 20);
             progressBarFiles.TabIndex = 8;
             // 
-            // groupBox2
+            // gbxFolder
             // 
-            groupBox2.Controls.Add(lbTotalFolder);
-            groupBox2.Controls.Add(lbFolderBar);
-            groupBox2.Controls.Add(lbFolderProgress);
-            groupBox2.Location = new Point(540, 325);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(78, 22);
-            groupBox2.TabIndex = 9;
-            groupBox2.TabStop = false;
+            gbxFolder.Controls.Add(lbTotalFolder);
+            gbxFolder.Controls.Add(lbFolderBar);
+            gbxFolder.Controls.Add(lbFolderProgress);
+            gbxFolder.Location = new Point(540, 325);
+            gbxFolder.Name = "gbxFolder";
+            gbxFolder.Size = new Size(78, 22);
+            gbxFolder.TabIndex = 9;
+            gbxFolder.TabStop = false;
             // 
             // lbTotalFolder
             // 
@@ -263,16 +270,16 @@
             lbFolderProgress.TabIndex = 4;
             lbFolderProgress.Text = "0";
             // 
-            // groupBox3
+            // gbxFile
             // 
-            groupBox3.Controls.Add(lbTotalFile);
-            groupBox3.Controls.Add(lbFileBar);
-            groupBox3.Controls.Add(lbFileProgress);
-            groupBox3.Location = new Point(540, 353);
-            groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(78, 23);
-            groupBox3.TabIndex = 10;
-            groupBox3.TabStop = false;
+            gbxFile.Controls.Add(lbTotalFile);
+            gbxFile.Controls.Add(lbFileBar);
+            gbxFile.Controls.Add(lbFileProgress);
+            gbxFile.Location = new Point(540, 353);
+            gbxFile.Name = "gbxFile";
+            gbxFile.Size = new Size(78, 23);
+            gbxFile.TabIndex = 10;
+            gbxFile.TabStop = false;
             // 
             // lbTotalFile
             // 
@@ -316,19 +323,12 @@
             progressBarFolders.Size = new Size(180, 19);
             progressBarFolders.TabIndex = 7;
             // 
-            // txtDestinationFolder1
-            // 
-            txtDestinationFolder1.Location = new Point(0, 25);
-            txtDestinationFolder1.Name = "txtDestinationFolder1";
-            txtDestinationFolder1.Size = new Size(526, 23);
-            txtDestinationFolder1.TabIndex = 1;
-            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
-            ClientSize = new Size(1086, 399);
+            ClientSize = new Size(635, 385);
             Controls.Add(tlpMainForm);
             Name = "MainForm";
             Text = "MainForm";
@@ -338,12 +338,12 @@
             grpBoxSourceFolder.PerformLayout();
             grpBoxDestinationFolder.ResumeLayout(false);
             grpBoxDestinationFolder.PerformLayout();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
-            groupBox2.ResumeLayout(false);
-            groupBox2.PerformLayout();
-            groupBox3.ResumeLayout(false);
-            groupBox3.PerformLayout();
+            gbxModel.ResumeLayout(false);
+            gbxModel.PerformLayout();
+            gbxFolder.ResumeLayout(false);
+            gbxFolder.PerformLayout();
+            gbxFile.ResumeLayout(false);
+            gbxFile.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -356,18 +356,18 @@
         private TreeView tvFolders;
         private Button btnGenerateXpp;
         private CheckBox checkBox1;
-        private GroupBox groupBox1;
+        private GroupBox gbxModel;
         private Label lbModelBar;
         public Label lbTotalModel;
         public ProgressBar progressBarModelos;
         public Label lbModelProgress;
         private ProgressBar progressBarFolders;
         private ProgressBar progressBarFiles;
-        private GroupBox groupBox2;
+        private GroupBox gbxFolder;
         public Label lbTotalFolder;
         private Label lbFolderBar;
         public Label lbFolderProgress;
-        private GroupBox groupBox3;
+        private GroupBox gbxFile;
         public Label lbTotalFile;
         private Label lbFileBar;
         public Label lbFileProgress;
