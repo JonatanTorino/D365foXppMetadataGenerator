@@ -38,28 +38,49 @@
 
         public static void PopulateTreeViewRecursively(TreeNode parentNode, string parentPath, string[] folderNamesToSearch, string[] folderNamesToRemove)
         {
-            // Itera a través de los subdirectorios en la ruta dada
-            foreach (string subDir in Directory.GetDirectories(parentPath))
+            try
             {
-                string subDirName = Path.GetFileName(subDir);
-
-                // Verifica si el subdirectorio contiene al menos una de las carpetas buscadas
-                if (folderNamesToSearch.Any(name => Directory.GetDirectories(subDir, name, SearchOption.AllDirectories).Any()))
+                // Itera a través de los subdirectorios en la ruta dada
+                foreach (string subDir in Directory.GetDirectories(parentPath))
                 {
-                    // Verifica si el subdirectorio está en la lista de carpetas para omitir
-                    if (folderNamesToRemove.Contains(subDirName))
+                    string subDirName = Path.GetFileName(subDir);
+
+                    try
                     {
-                        // Omitir este subdirectorio y no agregarlo al TreeView
-                        continue;
+                        // Verifica si el subdirectorio contiene al menos una de las carpetas buscadas
+                        if (folderNamesToSearch.Any(name => Directory.GetDirectories(subDir, name, SearchOption.AllDirectories).Any()))
+                        {
+                            // Verifica si el subdirectorio está en la lista de carpetas para omitir
+                            if (folderNamesToRemove.Contains(subDirName))
+                            {
+                                // Omitir este subdirectorio y no agregarlo al TreeView
+                                continue;
+                            }
+
+                            // Agrega el subdirectorio como un nodo hijo del nodo padre
+                            TreeNode node = new TreeNode(subDirName);
+                            parentNode.Nodes.Add(node);
+
+                            // Llama a PopulateTreeViewRecursively para seguir buscando en este subdirectorio
+                            PopulateTreeViewRecursively(node, subDir, folderNamesToSearch, folderNamesToRemove);
+                        }
                     }
-
-                    // Agrega el subdirectorio como un nodo hijo del nodo padre
-                    TreeNode node = new TreeNode(subDirName);
-                    parentNode.Nodes.Add(node);
-
-                    // Llama a PopulateTreeViewRecursively para seguir buscando en este subdirectorio
-                    PopulateTreeViewRecursively(node, subDir, folderNamesToSearch, folderNamesToRemove);
+                    catch (UnauthorizedAccessException)
+                    {
+                        // Manejar la excepción de acceso no autorizado (registra o notifica según necesidades)
+                        Console.WriteLine($"Acceso no autorizado al directorio: {subDir}");
+                    }
                 }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Manejar la excepción de acceso no autorizado en el directorio principal (registra o notifica según necesidades)
+                Console.WriteLine($"Acceso no autorizado al directorio principal: {parentPath}");
+            }
+            catch (Exception ex)
+            {
+                // Manejar cualquier otra excepción de manera genérica (registra o notifica según necesidades)
+                Console.WriteLine($"Error al obtener subdirectorios: {ex.Message}");
             }
         }
 
