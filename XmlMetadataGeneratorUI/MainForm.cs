@@ -24,6 +24,8 @@
             txtDestinationFolder1.Text = lastValues.DestinationFolder;
 
             txtSourceFolder1.TextChanged += txtSourceFolder_TextChanged;
+
+            txtSourceFolder1.TextChanged += TxtSourceFolder_TextChanged;
             txtDestinationFolder1.TextChanged += TxtDestinationFolder_TextChanged;
 
             modeloTerminado += avanzarProgressBarModelo;
@@ -44,12 +46,42 @@
         {
             lastValues.SourceFolder = txtSourceFolder1.Text;
             lastValuesManager.SaveLastValues(lastValues);
+
+            // Verifica si ambos cuadros de texto tienen rutas válidas
+            if (IsValidFolderPath(txtSourceFolder1.Text) && IsValidFolderPath(txtDestinationFolder1.Text))
+            {
+                // Activa el botón btnGenerateXpp
+                btnGenerateXpp.Enabled = true;
+            }
+            else
+            {
+                // Desactiva el botón btnGenerateXpp
+                btnGenerateXpp.Enabled = false;
+            }
         }
 
         private void TxtDestinationFolder_TextChanged(object sender, EventArgs e)
         {
             lastValues.DestinationFolder = txtDestinationFolder1.Text;
             lastValuesManager.SaveLastValues(lastValues);
+
+            // Verifica si ambos cuadros de texto tienen rutas válidas
+            if (IsValidFolderPath(txtSourceFolder1.Text) && IsValidFolderPath(txtDestinationFolder1.Text))
+            {
+                // Activa el botón btnGenerateXpp
+                btnGenerateXpp.Enabled = true;
+            }
+            else
+            {
+                // Desactiva el botón btnGenerateXpp
+                btnGenerateXpp.Enabled = false;
+            }
+        }
+
+        private bool IsValidFolderPath(string path)
+        {
+            // Puedes agregar lógica adicional aquí según tus requisitos
+            return !string.IsNullOrWhiteSpace(path) && Directory.Exists(path);
         }
 
         private string SelectPath(string initialDirectory)
@@ -77,7 +109,6 @@
         private void btnDestinationFolder_Click(object sender, EventArgs e)
         {
             txtDestinationFolder1.Text = SelectPath(string.Empty);
-            btnGenerateXpp.Enabled = true;
         }
 
         private void txtSourceFolder_TextChanged(object sender, EventArgs e)
@@ -124,6 +155,7 @@
                 progressBarModelos.Maximum = selectedNodes.Count;
                 lbTotalModel.Text = progressBarModelos.Maximum.ToString();
                 lbTotalFolder.Text = "5";
+
                 foreach (TreeNode selectedNode in selectedNodes)
                 {
                     string dir = MainFormMethods.GetFullPath(selectedNode, txtSourceFolder1.Text);
@@ -201,8 +233,15 @@
 
         private void avanzarProgressBarArchivo()
         {
-            progressBarFiles.Value += 1;
-            lbFileProgress.Text = progressBarFiles.Value.ToString();
+            // Incrementa el valor máximo del ProgressBar según sea necesario
+            progressBarFiles.Maximum += 1;
+
+            // Asegúrate de que el nuevo valor esté dentro del rango permitido
+            if (progressBarFiles.Value < progressBarFiles.Maximum)
+            {
+                progressBarFiles.Value += 1;
+                lbFileProgress.Text = progressBarFiles.Value.ToString();
+            }
         }
 
         private void tvFolders_AfterCheck(object sender, TreeViewEventArgs e)
@@ -219,7 +258,5 @@
             // Recorre todos los nodos del TreeView y establece su estado de selección
             MainFormMethods.SetNodeCheckedState(tvFolders.Nodes, selectAll);
         }
-
-
     }
 }
