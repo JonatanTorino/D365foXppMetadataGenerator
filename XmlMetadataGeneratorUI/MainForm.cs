@@ -1,4 +1,7 @@
-﻿namespace XmlMetadataGeneratorUI
+﻿using System.Linq;
+using System.Xml.Linq;
+
+namespace XmlMetadataGeneratorUI
 {
     public partial class MainForm : Form
     {
@@ -13,6 +16,7 @@
         {
             InitializeComponent();
             btnGenerateXpp.Enabled = false;
+
             autoCompleteSourceFolder1 = new AutoCompletePath(txtSourceFolder1);
             autoCompleteDestinationFolder1 = new AutoCompletePath(txtDestinationFolder1);
 
@@ -29,17 +33,27 @@
             txtDestinationFolder1.TextChanged += TxtDestinationFolder_TextChanged;
 
             modeloTerminado += avanzarProgressBarModelo;
-            progressBarFiles.Visible = false;
-            progressBarFolders.Visible = false;
-            progressBarModelos.Visible = false;
+            grpFile.Visible = false;
+            grpModel.Visible = false;
+            grpFolder.Visible = false;
             gbxModel.Visible = false;
             gbxFolder.Visible = false;
             gbxFile.Visible = false;
+
+            if (IsValidFolderPath(txtSourceFolder1.Text) && IsValidFolderPath(txtDestinationFolder1.Text))
+            {
+                btnGenerateXpp.Enabled = true;
+                this.refreshTree(txtSourceFolder1.Text);
+            }
+
         }
         private void avanzarProgressBarModelo()
         {
-            progressBarModelos.Value += 1;
-            lbModelProgress.Text = progressBarModelos.Value.ToString();
+            if (progressBarModelos.Value < progressBarModelos.Maximum)
+            {
+                progressBarModelos.Value += 1;
+                lbModelProgress.Text = progressBarModelos.Value.ToString();
+            }
         }
 
         private void TxtSourceFolder_TextChanged(object sender, EventArgs e)
@@ -115,6 +129,11 @@
         {
             string sourceDir = txtSourceFolder1.Text;
 
+            this.refreshTree(sourceDir);
+        }
+
+        private void refreshTree(string sourceDir)
+        {
             // Limpia los nodos existentes en el TreeView
             tvFolders.Nodes.Clear();
 
@@ -132,62 +151,91 @@
 
                 // Llena el TreeView recursivamente
                 MainFormMethods.PopulateTreeViewRecursively(rootNode, sourceDir, folderNamesToSearch, folderNamesToRemove);
+
+                grpFile.Visible = false;
+                grpModel.Visible = false;
+                grpFolder.Visible = false;
+                gbxModel.Visible = false;
+                gbxFolder.Visible = false;
+                gbxFile.Visible = false;
             }
+
         }
 
         private void btnGenerateXpp_Click(object sender, EventArgs e)
         {
-            progressBarFiles.Visible = true;
-            progressBarFolders.Visible = true;
-            progressBarModelos.Visible = true;
-            progressBarModelos.Value = 0;
-            progressBarFiles.Value = 0;
-            progressBarFolders.Value = 0;
-            gbxModel.Visible = true;
-            gbxFolder.Visible = true;
-            gbxFile.Visible = true;
-
             // Obtén los nodos seleccionados en el TreeView
-            var selectedNodes = MainFormMethods.GetSelectedNodes(tvFolders.Nodes);
+            //var selectedNodes = MainFormMethods.GetSelectedNodes(tvFolders.Nodes);
+            List<TreeNode> selectedNodes = GetSelectedNodes(tvFolders.Nodes);
 
             if (selectedNodes.Count > 0)
             {
-                progressBarModelos.Maximum = selectedNodes.Count;
+                List<TreeNode> updatedNodes = new List<TreeNode>();
+
+                grpFile.Visible = true;
+                grpModel.Visible = true;
+                grpFolder.Visible = true;
+                gbxModel.Visible = true;
+                gbxFolder.Visible = true;
+                gbxFile.Visible = true;
+
+                progressBarFiles.Value = 0;
+                progressBarFiles.Maximum = 0;
+
+                progressBarModelos.Value = 0;
+                progressBarModelos.Maximum = selectedNodes.GroupBy(p => p.Text).Select(grp => grp.FirstOrDefault()).Count();
                 lbTotalModel.Text = progressBarModelos.Maximum.ToString();
-                lbTotalFolder.Text = "5";
+
+                progressBarFolders.Value = 0;
+                progressBarFolders.Maximum = (5 * progressBarModelos.Maximum);
+                lbTotalFolder.Text = progressBarFolders.Maximum.ToString(); // "5";
+
+                int cant = 0;
 
                 foreach (TreeNode selectedNode in selectedNodes)
                 {
+                    // si hay nodos repetidos se ignoran
+                    if (updatedNodes.IndexOf(selectedNode) >= 0)
+                    {
+                        continue;
+                    }
+                    updatedNodes.Add(selectedNode);
+
                     string dir = MainFormMethods.GetFullPath(selectedNode, txtSourceFolder1.Text);
 
                     XppGenerator xppGenerator = new XppGenerator(txtDestinationFolder1.Text);
-                    progressBarFolders.Value = 0;
+                    
                     xppGenerator.SetXppModelDirectory(dir);
 
-                    xppGenerator.archivoGenerado += avanzarProgressBarArchivo;
+                    xppGenerator.archivoGenerado += AvanzarProgressBarArchivo;
 
                     AxClassReader axClassReader = new AxClassReader();
-                    progressBarFiles.Maximum = axClassReader.GetFilesNumber(dir);
+                    cant = axClassReader.GetFilesNumber(dir);
+                    progressBarFiles.Maximum += cant;
                     xppGenerator.ProcessAxFiles(dir, axClassReader);
                     AvanzarProgressBarCarpetas();
 
                     AxTableReader axTableReader = new AxTableReader();
-                    progressBarFiles.Maximum = progressBarFiles.Maximum + axTableReader.GetFilesNumber(dir);
+                    cant = axTableReader.GetFilesNumber(dir);
+                    progressBarFiles.Maximum += cant;
                     xppGenerator.ProcessAxFiles(dir, axTableReader);
                     AvanzarProgressBarCarpetas();
 
                     AxMapReader axMapReader = new AxMapReader();
-                    progressBarFiles.Maximum = progressBarFiles.Maximum + axMapReader.GetFilesNumber(dir);
+                    cant = axMapReader.GetFilesNumber(dir);
+                    progressBarFiles.Maximum += cant;
                     xppGenerator.ProcessAxFiles(dir, axMapReader);
                     AvanzarProgressBarCarpetas();
 
                     AxFormReader axFormReader = new AxFormReader();
-                    progressBarFiles.Maximum = progressBarFiles.Maximum + axFormReader.GetFilesNumber(dir);
+                    cant = axFormReader.GetFilesNumber(dir);
+                    progressBarFiles.Maximum += cant;
                     xppGenerator.ProcessAxFiles(dir, axFormReader);
                     AvanzarProgressBarCarpetas();
 
                     AxEntityReader axEntityReader = new AxEntityReader();
-                    progressBarFiles.Maximum = progressBarFiles.Maximum + axEntityReader.GetFilesNumber(dir);
+                    cant = axEntityReader.GetFilesNumber(dir);
+                    progressBarFiles.Maximum += cant;
                     xppGenerator.ProcessAxFiles(dir, axEntityReader);
                     AvanzarProgressBarCarpetas();
 
@@ -196,6 +244,14 @@
                     modeloTerminado();
                 }
                 MessageBox.Show("La cantidad de archivos generados son: " + progressBarFiles.Value);
+
+                grpFile.Visible = false;
+                grpModel.Visible = false;
+                grpFolder.Visible = false;
+                gbxModel.Visible = false;
+                gbxFolder.Visible = false;
+                gbxFile.Visible = false;
+
             }
             else
             {
@@ -227,14 +283,17 @@
 
         private void AvanzarProgressBarCarpetas()
         {
-            progressBarFolders.Value += 1;
-            lbFolderProgress.Text = progressBarFolders.Value.ToString();
+            if (progressBarFolders.Value < progressBarFolders.Maximum)
+            {
+                progressBarFolders.Value += 1;
+                lbFolderProgress.Text = progressBarFolders.Value.ToString();
+            }
         }
 
-        private void avanzarProgressBarArchivo()
+        private void AvanzarProgressBarArchivo()
         {
             // Incrementa el valor máximo del ProgressBar según sea necesario
-            progressBarFiles.Maximum += 1;
+            //progressBarFiles.Maximum += 1;
 
             // Asegúrate de que el nuevo valor esté dentro del rango permitido
             if (progressBarFiles.Value < progressBarFiles.Maximum)
@@ -257,6 +316,31 @@
 
             // Recorre todos los nodos del TreeView y establece su estado de selección
             MainFormMethods.SetNodeCheckedState(tvFolders.Nodes, selectAll);
+        }
+
+        public static List<TreeNode> GetSelectedNodes(TreeNodeCollection nodes)
+        {
+            List<TreeNode> selectedNodes = new List<TreeNode>();
+
+            foreach (TreeNode node in nodes)
+            {
+                if (node.Checked) // Cambiado de IsSelected a Checked
+                {
+                    // Si el nodo padre está seleccionado, agregar también sus hijos
+                    if (node.Nodes.Count > 0 && node.Nodes.Cast<TreeNode>().All(child => child.Checked))
+                    {
+                        selectedNodes.AddRange(node.Nodes.Cast<TreeNode>());
+                    }
+                    else
+                    {
+                        selectedNodes.Add(node);
+                    }
+                }
+
+                selectedNodes.AddRange(GetSelectedNodes(node.Nodes));
+            }
+
+            return selectedNodes;
         }
     }
 }
